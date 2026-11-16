@@ -149,7 +149,7 @@ tests/           testes do núcleo matemático (Vitest)
 docs/            logo e capturas de tela deste README
 ```
 
-Para mudar os créditos (curso, professor, autores, período), edite [`src/credits.ts`](src/credits.ts); campos vazios não aparecem no site.
+Para mudar os créditos (curso, professor, integrantes, período), edite [`src/credits.ts`](src/credits.ts); campos vazios não aparecem no site.
 
 ## Convenções
 
@@ -173,4 +173,4 @@ Para mudar os créditos (curso, professor, autores, período), edite [`src/credi
 
 Trabalho da disciplina de **Geometria Analítica e Álgebra Linear** · UNEMAT.
 
-Feito por [@Falow1](https://github.com/Falow1).
+**Integrantes:** Gabriel Egnes, Gabriel Vinicius, Gustavo, Rhonny e Lairo.

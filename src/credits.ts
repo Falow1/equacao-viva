@@ -7,19 +7,23 @@ export const CREDITS = {
   instituicao: "UNEMAT",
   curso: "",
   professor: "",
-  /** Nomes de quem fez o trabalho, na ordem em que devem aparecer. */
-  autores: [] as string[],
+  /** Integrantes do grupo, na ordem em que devem aparecer. */
+  autores: ["Gabriel Egnes", "Gabriel Vinicius", "Gustavo", "Rhonny", "Lairo"] as string[],
   /** Ex.: "2026/2" */
   periodo: "",
 };
 
-/** Linha de detalhes (curso, professor, autores, período) sem os campos vazios. */
+/** "A, B e C" */
+const listaPtBr = (nomes: string[]) =>
+  nomes.length < 2 ? nomes.join("") : `${nomes.slice(0, -1).join(", ")} e ${nomes[nomes.length - 1]}`;
+
+/** Linha de detalhes (curso, professor, integrantes, período) sem os campos vazios. */
 export function creditDetails(): string[] {
   const c = CREDITS;
   return [
     c.curso && `Curso: ${c.curso}`,
     c.professor && `Professor(a): ${c.professor}`,
-    c.autores.length > 0 && `${c.autores.length > 1 ? "Autores" : "Autor(a)"}: ${c.autores.join(", ")}`,
+    c.autores.length > 0 && `${c.autores.length > 1 ? "Integrantes" : "Autor(a)"}: ${listaPtBr(c.autores)}`,
     c.periodo && `Período: ${c.periodo}`,
   ].filter((x): x is string => Boolean(x));
 }
