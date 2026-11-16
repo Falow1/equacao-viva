@@ -191,3 +191,15 @@ export function fmtDeg(rad: number): string {
   const d = (rad * 180) / Math.PI;
   return `${decimalString(d, 1).replace(".", ",").replace("-", "−")}°`;
 }
+
+/** Graus com uma casa, em LaTeX. */
+export function texDeg(rad: number): string {
+  const d = (rad * 180) / Math.PI;
+  return `${decimalString(d, 1).replace(".", "{,}")}^\\circ`;
+}
+
+/** "x − a" (ou só "x" se a = 0). */
+export function texShift(v: string, a: number, opts: NumOpts = {}): string {
+  a = normalizeZero(a);
+  return a === 0 ? v : `${v} ${texSigned(-a, opts)}`;
+}

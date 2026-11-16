@@ -5,6 +5,7 @@ import { angle, dot, norm } from "../math/vec";
 import { useUrlState } from "../state/useUrlState";
 import { Block, LiveEquation, MatrixInput, Note, Presets, ResultRow, Results } from "../ui/controls";
 import { ModuleLayout } from "../ui/ModuleLayout";
+import { Tex } from "../ui/Tex";
 import { Arrow, DraggablePoint, InfLine, Plane2D, Plot, type P2 } from "../viz2d";
 
 export default function H1() {
@@ -137,6 +138,5 @@ export default function H1() {
   );
 }
 
-import { Tex } from "../ui/Tex";
 const MathTex = ({ t }: { t: string }) => <Tex>{t}</Tex>;
 const fmtL = (x: number) => (Math.round(x * 100) / 100).toString().replace(".", ",").replace("-", "−");
