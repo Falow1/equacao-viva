@@ -1,6 +1,6 @@
-import { Html, Line, OrbitControls } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Line, OrbitControls } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { marchingTetra } from "../math/implicit3d";
@@ -151,15 +151,39 @@ function Axes3D({ R }: { R: number }) {
 /* ---------- Primitivas ---------- */
 
 export function Label3D({ at, text, color = "text", size = 14, weight = 650, offset = [0, 0] }: { at: V3; text: string; color?: string; size?: number; weight?: number; offset?: [number, number] }) {
+  // Rótulo em DOM puro, reposicionado a cada quadro (sem criar raízes React por rótulo).
   const c = useColor(color);
-  if (at.some((x) => !Number.isFinite(x))) return null;
-  return (
-    <Html position={at} center zIndexRange={[4, 0]} style={{ pointerEvents: "none" }}>
-      <span className="label3d" style={{ color: c, fontSize: size, fontWeight: weight, transform: `translate(${offset[0]}px, ${offset[1]}px)`, display: "inline-block" }}>
-        {text}
-      </span>
-    </Html>
-  );
+  const { gl, camera, size: vp } = useThree();
+  const el = useMemo(() => document.createElement("span"), []);
+  const pos = useRef(at);
+  pos.current = at;
+  const tmp = useMemo(() => new THREE.Vector3(), []);
+  useLayoutEffect(() => {
+    gl.domElement.parentElement?.appendChild(el);
+    return () => el.remove();
+  }, [gl, el]);
+  useLayoutEffect(() => {
+    el.className = "label3d";
+    el.textContent = text;
+    Object.assign(el.style, { position: "absolute", left: "0", top: "0", color: c, fontSize: `${size}px`, fontWeight: String(weight), pointerEvents: "none", willChange: "transform" });
+  }, [el, text, c, size, weight]);
+  useFrame(() => {
+    const p = pos.current;
+    if (p.some((x) => !Number.isFinite(x))) {
+      el.style.display = "none";
+      return;
+    }
+    tmp.set(p[0], p[1], p[2]).project(camera);
+    if (tmp.z > 1) {
+      el.style.display = "none";
+      return;
+    }
+    el.style.display = "";
+    const x = (tmp.x * 0.5 + 0.5) * vp.width + offset[0];
+    const y = (-tmp.y * 0.5 + 0.5) * vp.height + offset[1];
+    el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`;
+  });
+  return null;
 }
 
 /** Seta 3D: linha + cone na ponta. */

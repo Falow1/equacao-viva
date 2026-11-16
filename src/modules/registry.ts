@@ -65,7 +65,7 @@ export const MODULES: ModuleMeta[] = [
   m("C4", "equacao-geral-conicas", "Equação geral do 2º grau", "conicas", "2d", "Classifique Ax² + Bxy + Cy² + Dx + Ey + F = 0 e gire os eixos.", ["C1", "C2", "C3"], () => import("./C4")),
   m("D1", "quadricas", "Galeria das quádricas", "quadricas", "3d", "Elipsoide, hiperboloides, cone, paraboloides e cilindros com seus traços.", ["C4"], () => import("./D1")),
   m("E1", "sistemas-lineares", "Sistemas lineares: o que é a solução", "sistemas", "2d", "Cada equação é uma reta (ou plano); a solução é onde todas se encontram.", [], () => import("./E1")),
-  m("E2", "eliminacao-de-gauss", "Eliminação de Gauss passo a passo", "sistemas", "2d", "Operações elementares mudam as equações, mas não a solução.", ["E1"], () => import("./E2")),
+  m("E2", "eliminacao-de-gauss", "Eliminação de Gauss passo a passo", "sistemas", "3d", "Operações elementares mudam as equações, mas não a solução.", ["E1"], () => import("./E2")),
   m("E3", "determinante", "Determinante como área e volume", "sistemas", "2d", "O determinante é a área (ou volume) com sinal gerada pelas colunas.", ["A3"], () => import("./E3")),
   m("F1", "combinacao-linear", "Combinação linear e espaço gerado", "espacos", "2d", "Quais vetores dá para alcançar com c₁v₁ + c₂v₂?", ["A1"], () => import("./F1")),
   m("F2", "mudanca-de-base", "Base e mudança de base", "espacos", "2d", "O mesmo ponto tem coordenadas diferentes em bases diferentes.", ["F1"], () => import("./F2")),
