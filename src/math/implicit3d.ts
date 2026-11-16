@@ -81,5 +81,23 @@ export function marchingTetra(F: (x: number, y: number, z: number) => number, R:
     gx /= L; gy /= L; gz /= L;
     normals[p] = gx; normals[p + 1] = gy; normals[p + 2] = gz;
   }
+  // Orienta cada triângulo de acordo com o gradiente, para a iluminação dos dois lados ficar coerente.
+  for (let t = 0; t < positions.length; t += 9) {
+    const ax = positions[t], ay = positions[t + 1], az = positions[t + 2];
+    const ux = positions[t + 3] - ax, uy = positions[t + 4] - ay, uz = positions[t + 5] - az;
+    const vx = positions[t + 6] - ax, vy = positions[t + 7] - ay, vz = positions[t + 8] - az;
+    const cx = uy * vz - uz * vy, cy = uz * vx - ux * vz, cz = ux * vy - uy * vx;
+    const gx = normals[t] + normals[t + 3] + normals[t + 6];
+    const gy = normals[t + 1] + normals[t + 4] + normals[t + 7];
+    const gz = normals[t + 2] + normals[t + 5] + normals[t + 8];
+    if (cx * gx + cy * gy + cz * gz < 0) {
+      for (const arr of [positions, normals])
+        for (let c = 0; c < 3; c++) {
+          const tmp = arr[t + 3 + c];
+          arr[t + 3 + c] = arr[t + 6 + c];
+          arr[t + 6 + c] = tmp;
+        }
+    }
+  }
   return { positions, normals };
 }

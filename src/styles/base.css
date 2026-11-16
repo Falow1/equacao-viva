@@ -534,7 +534,7 @@ select.select {
 .split-graph > div { position: relative; min-width: 0; }
 .split-graph > div + div { border-left: 1px solid var(--border); }
 .split-graph .split-title {
-  position: absolute; top: 8px; left: 10px; z-index: 5; font-size: 13px; font-weight: 600; color: var(--text-2);
+  position: absolute; bottom: 10px; left: 10px; z-index: 5; font-size: 13px; font-weight: 600; color: var(--text-2);
   background: color-mix(in srgb, var(--surface) 90%, transparent); padding: 2px 8px; border-radius: 6px; pointer-events: none;
 }
 @media (max-width: 640px) {

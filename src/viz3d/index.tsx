@@ -246,6 +246,13 @@ export function Line3D({ line, color = "obj1", width = 3, R = 4, dashed = false 
   return <Seg3D a={seg[0] as V3} b={seg[1] as V3} color={color} width={width} dashed={dashed} />;
 }
 
+/** Conjunto de segmentos soltos [a0, b0, a1, b1, ...]; `onTop` desenha por cima das superfícies. */
+export function Segments3D({ points, color = "obj3", width = 3, onTop = false }: { points: V3[]; color?: string; width?: number; onTop?: boolean }) {
+  const c = useColor(color);
+  if (points.length < 2) return null;
+  return <Line points={points} segments color={c} lineWidth={width} depthTest={!onTop} renderOrder={onTop ? 10 : 0} />;
+}
+
 /** Superfície implícita F(x, y, z) = 0. */
 export function ImplicitSurface({ F, R = 4, res = 40, color = "obj1", opacity = 0.85, deps }: { F: (x: number, y: number, z: number) => number; R?: number; res?: number; color?: string; opacity?: number; deps: unknown[] }) {
   const c = useColor(color);
