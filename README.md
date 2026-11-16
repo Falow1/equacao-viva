@@ -14,10 +14,10 @@ Tudo roda no navegador, sem servidor, login ou coleta de dados.
 | B · Retas e planos | B1 reta no plano · B2 duas retas e distâncias · B3 reta no espaço · B4 plano no espaço · B5 posições relativas e distâncias no espaço |
 | C · Cônicas | C1 elipse · C2 hipérbole · C3 parábola · C4 equação geral do 2º grau (rotação e translação) |
 | D · Quádricas | D1 galeria das quádricas com plano de corte e traço |
-| E · Sistemas e matrizes | E1 sistemas como retas e planos (Rouché–Capelli, Cramer) · E2 escalonamento passo a passo · E3 determinante como área e volume |
-| F · Espaços vetoriais | F1 combinação linear e espaço gerado · F2 mudança de base · F3 núcleo, imagem e posto |
+| E · Sistemas e matrizes | E1 sistemas como retas e planos (Rouché–Capelli, Cramer) · E2 escalonamento passo a passo · E3 determinante como área e volume · E4 operações com matrizes e inversa por Gauss–Jordan |
+| F · Espaços vetoriais | F1 combinação linear e espaço gerado · F2 subespaços, base e dimensão · F3 mudança de base · F4 núcleo, imagem e posto |
 | G · Transformações lineares | G1 matriz de uma transformação · G2 composição e inversa · G3 transformações no espaço |
-| H · Autovalores e ortogonalidade | H1 autovalores e autovetores · H2 diagonalização e formas quadráticas · H3 Gram–Schmidt · H4 mínimos quadrados |
+| H · Autovalores e ortogonalidade | H1 autovalores e autovetores · H2 diagonalização e formas quadráticas · H3 diagonalização 3×3, polinômio minimal e Hamilton–Cayley · H4 Gram–Schmidt · H5 mínimos quadrados |
 
 Há também o **Laboratório livre** (2D e 3D), onde se digitam expressões como `y = a*x^2`, `x^2 + y^2 = 9`, `(cos(t), sin(2t))`,
 `M = [[1,2],[0,1]]`, `z = x*y` ou `x^2 + y^2 - z^2 = 1`. Letras livres viram sliders.

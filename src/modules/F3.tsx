@@ -1,116 +1,85 @@
-import { tex, texMatrix, texTuple } from "../math/format";
-import { columnSpace, nullspace } from "../math/linsys";
-import { rank } from "../math/mat";
-import { cross, isZeroVec, type Vec3 } from "../math/vec";
+import { inverse, mulVec } from "../math/mat";
+import { o1, o2, o3, tex, texMatrix, texTuple } from "../math/format";
+import { cross2 } from "../math/vec";
 import { useUrlState } from "../state/useUrlState";
-import { Block, LiveEquation, MatrixInput, Note, Presets, ResultRow, Results } from "../ui/controls";
+import { Block, LiveEquation, Note, Presets, ResultRow, Results, VecInput } from "../ui/controls";
 import { ModuleLayout } from "../ui/ModuleLayout";
-import { Arrow3D, Line3D, PlaneMesh, Point3D, Scene3D, type V3 } from "../viz3d";
-
-const DEF = [[1, 0, 1], [0, 1, 1], [1, 1, 2]];
-
-/** Desenha o subespaço gerado por uma base (ponto, reta, plano ou espaço). */
-function Subspace({ basis, color }: { basis: number[][]; color: string }) {
-  if (basis.length === 0) return <Point3D at={[0, 0, 0]} color={color} size={0.14} />;
-  if (basis.length === 1) return <Line3D line={{ p: [0, 0, 0], v: basis[0] as Vec3 }} color={color} width={6} />;
-  if (basis.length === 2) {
-    const n = cross(basis[0] as Vec3, basis[1] as Vec3);
-    return isZeroVec(n) ? null : <PlaneMesh plane={{ n, d: 0 }} color={color} opacity={0.3} />;
-  }
-  return null;
-}
-
-const DIM_NAME = ["{0} (só a origem)", "uma reta pela origem", "um plano pela origem", "ℝ³ inteiro"];
+import { Arrow, BasisGrid, DraggablePoint, Plane2D, type P2 } from "../viz2d";
 
 export default function F3() {
-  const [s, set, reset] = useUrlState({ A: DEF });
-  const A = s.A as number[][];
-  const ker = nullspace(A);
-  const img = columnSpace(A);
-  const r = rank(A);
-  const nul = 3 - r;
-  const cols = [0, 1, 2].map((j) => [A[0][j], A[1][j], A[2][j]] as V3);
+  const [s, set, reset] = useUrlState({ b1: [2, 0.5], b2: [0.5, 1.5], v: [3, 3] });
+  const b1 = s.b1 as P2, b2 = s.b2 as P2, v = s.v as P2;
+  const P = [[b1[0], b2[0]], [b1[1], b2[1]]];
+  const Pinv = inverse(P);
+  const isBasis = Math.abs(cross2(b1, b2)) > 1e-9;
+  const c = Pinv ? (mulVec(Pinv, v) as P2) : null;
 
   const graph = (
-    <div className="split-graph">
-      <div>
-        <span className="split-title">Domínio: núcleo N(A)</span>
-        <Scene3D R={3} label="Domínio com o núcleo da matriz">
-          <Subspace basis={ker} color="obj6" />
-          {ker.map((v, i) => (
-            <Arrow3D key={i} to={v as V3} color="obj6" width={3} />
-          ))}
-          <Arrow3D to={[1, 0, 0]} color="obj1" label="e₁" width={2.5} />
-          <Arrow3D to={[0, 1, 0]} color="obj2" label="e₂" width={2.5} />
-          <Arrow3D to={[0, 0, 1]} color="obj5" label="e₃" width={2.5} />
-        </Scene3D>
-      </div>
-      <div>
-        <span className="split-title">Contradomínio: imagem Im(A)</span>
-        <Scene3D R={3} label="Contradomínio com a imagem da matriz">
-          <Subspace basis={img} color="obj4" />
-          <Arrow3D to={cols[0]} color="obj1" label="Ae₁" width={3} />
-          <Arrow3D to={cols[1]} color="obj2" label="Ae₂" width={3} />
-          <Arrow3D to={cols[2]} color="obj5" label="Ae₃" width={3} />
-        </Scene3D>
-      </div>
-    </div>
+    <Plane2D x={[-5, 6]} y={[-4, 5]} label="Base B e coordenadas de um ponto">
+      {isBasis && <BasisGrid b1={b1} b2={b2} n={10} color="var(--obj4)" opacity={0.5} />}
+      {c && (
+        <>
+          <Arrow tip={[c[0] * b1[0], c[0] * b1[1]]} color="var(--obj1)" weight={2} dashed opacity={0.8} />
+          <Arrow tail={[c[0] * b1[0], c[0] * b1[1]]} tip={v} color="var(--obj2)" weight={2} dashed opacity={0.8} />
+        </>
+      )}
+      <Arrow tip={v} color="var(--obj3)" label="v" />
+      <Arrow tip={b1} color="var(--obj1)" label="b₁" weight={4} />
+      <Arrow tip={b2} color="var(--obj2)" label="b₂" weight={4} />
+      <DraggablePoint point={b1} onMove={(p) => set({ b1: p })} color="var(--obj1)" />
+      <DraggablePoint point={b2} onMove={(p) => set({ b2: p })} color="var(--obj2)" />
+      <DraggablePoint point={v} onMove={(p) => set({ v: p })} color="var(--obj3)" />
+    </Plane2D>
   );
 
   return (
     <ModuleLayout
       graph={graph}
       onReset={reset}
-      snapToggle={false}
       explain={
         <>
           <p>
-            Para uma matriz A (3×3) vista como transformação T(x) = Ax, o <strong>núcleo</strong> N(A) é o conjunto dos vetores que vão parar na origem
-            (Ax = 0), e a <strong>imagem</strong> Im(A) é o conjunto de todos os resultados possíveis Ax. A imagem é gerada pelas colunas de A, que são as
-            imagens Ae₁, Ae₂, Ae₃ dos vetores da base canônica.
+            Uma base B = {"{b₁, b₂}"} do plano é um par de vetores não paralelos. Todo vetor v se escreve de um único jeito como v = c₁b₁ + c₂b₂; os
+            números (c₁; c₂) são as <strong>coordenadas de v na base B</strong>, escritas [v]<sub>B</sub>.
           </p>
           <p>
-            Os dois são subespaços (ponto, reta, plano ou o espaço todo) e se equilibram: o <strong>teorema do núcleo e da imagem</strong> diz que
-            dim N(A) + dim Im(A) = 3. Quanto mais a transformação “esmaga” (núcleo grande), menor fica a imagem.
-          </p>
-          <p>
-            T é <strong>injetora</strong> quando N(A) = {"{0}"}, <strong>sobrejetora</strong> quando Im(A) = ℝ³ e, sendo as duas coisas, é um{" "}
-            <strong>isomorfismo</strong> (A invertível).
+            A grade roxa é a “grade da base B”: as coordenadas em B se leem contando passos ao longo de b₁ e b₂. A matriz P = [b₁ b₂] converte de B para a
+            base canônica (v = P[v]<sub>B</sub>) e sua inversa faz o caminho contrário: [v]<sub>B</sub> = P⁻¹v.
           </p>
         </>
       }
     >
       <Block title="Equação">
-        <LiveEquation general={"\\operatorname{posto}(A) + \\operatorname{nulidade}(A) = 3"} current={`${r} + ${nul} = 3`} />
+        <LiveEquation
+          general={`[${o3("\\vec v")}]_B = P^{-1}${o3("\\vec v")},\\quad P = [\\,${o1("b_1")}\\ ${o2("b_2")}\\,]`}
+          current={c && Pinv ? `${texMatrix(Pinv)}${o3(texMatrix([[v[0]], [v[1]]]))} = ${texMatrix([[c[0]], [c[1]]])}` : "\\det P = 0"}
+        />
       </Block>
-      <Block title="Resultados">
-        <Results>
-          <ResultRow label={<span className="obj6">Núcleo N(A)</span>} tex={ker.length ? `[${ker.map((v) => texTuple(v)).join(",\\ ")}]` : "\\{\\vec 0\\}"} />
-          <ResultRow label="É" tex={`\\text{${DIM_NAME[ker.length]}}`} />
-          <ResultRow label={<span className="obj4">Imagem Im(A)</span>} tex={img.length ? `[${img.map((v) => texTuple(v)).join(",\\ ")}]` : "\\{\\vec 0\\}"} />
-          <ResultRow label="É" tex={`\\text{${DIM_NAME[img.length]}}`} />
-          <ResultRow label="Posto" tex={tex(r)} />
-          <ResultRow label="Nulidade" tex={tex(nul)} />
-        </Results>
-      </Block>
-      <Note kind={r === 3 ? "ok" : "warn"}>
-        {r === 3
-          ? "Núcleo trivial e imagem igual a ℝ³: a transformação é injetora, sobrejetora e portanto um isomorfismo (A é invertível)."
-          : `A transformação não é injetora (há vetores não nulos com Ax = 0) nem sobrejetora (a imagem é só ${DIM_NAME[r]}).`}
-      </Note>
+      {!isBasis && <Note kind="warn">b₁ e b₂ são paralelos (ou um deles é nulo): eles não formam uma base, porque só geram uma reta.</Note>}
+      {c && (
+        <Block title="Coordenadas">
+          <Results>
+            <ResultRow label="Na base canônica" tex={o3(`\\vec v = ${texTuple(v)}`)} />
+            <ResultRow label="Na base B" tex={`[\\vec v]_B = ${texTuple(c)}`} />
+            <ResultRow label="Conferência" tex={`${tex(c[0])}\\,${o1(texTuple(b1))} + ${tex(c[1])}\\,${o2(texTuple(b2))} = ${o3(texTuple(v))}`} />
+            <ResultRow label="P" tex={texMatrix(P)} />
+          </Results>
+        </Block>
+      )}
       <Block title="Controles">
-        <MatrixInput label="A =" value={A} onChange={(m) => set({ A: m })} colClass={(j) => ["obj1", "obj2", "obj5"][j]} />
-        <div style={{ marginTop: 8 }}>
-          <LiveEquation current={`A = ${texMatrix(A, { cellClass: (_i, j) => ["obj1", "obj2", "obj5"][j] })}`} />
+        <div className="controls">
+          <VecInput label={o1("b_1")} value={b1} onChange={(x) => set({ b1: x })} />
+          <VecInput label={o2("b_2")} value={b2} onChange={(x) => set({ b2: x })} />
+          <VecInput label={o3("\\vec v")} value={v} onChange={(x) => set({ v: x })} />
         </div>
       </Block>
       <Presets
         items={[
-          { label: "Posto 2 (núcleo reta)", apply: () => set({ A: DEF }) },
-          { label: "Invertível", apply: () => set({ A: [[2, 1, 0], [0, 1, 1], [1, 0, 1]] }) },
-          { label: "Projeção no plano xy", apply: () => set({ A: [[1, 0, 0], [0, 1, 0], [0, 0, 0]] }) },
-          { label: "Posto 1 (núcleo plano)", apply: () => set({ A: [[1, 1, 1], [2, 2, 2], [-1, -1, -1]] }) },
-          { label: "Matriz nula", apply: () => set({ A: [[0, 0, 0], [0, 0, 0], [0, 0, 0]] }) },
+          { label: "Base inclinada", apply: () => set({ b1: [2, 0.5], b2: [0.5, 1.5], v: [3, 3] }) },
+          { label: "Base canônica", apply: () => set({ b1: [1, 0], b2: [0, 1] }) },
+          { label: "Base girada 45°", apply: () => set({ b1: [1, 1], b2: [-1, 1], v: [2, 0] }) },
+          { label: "Base esticada", apply: () => set({ b1: [2, 0], b2: [0, 0.5], v: [3, 2] }) },
+          { label: "Vetores paralelos", apply: () => set({ b1: [1, 1], b2: [2, 2] }) },
         ]}
       />
     </ModuleLayout>

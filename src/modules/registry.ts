@@ -33,10 +33,10 @@ export const TRACKS: Track[] = [
   { id: "retas-planos", letter: "B", title: "Retas e planos", summary: "Equações da reta e do plano, posições relativas e distâncias." },
   { id: "conicas", letter: "C", title: "Cônicas", summary: "Elipse, hipérbole, parábola e a equação geral do 2º grau." },
   { id: "quadricas", letter: "D", title: "Quádricas", summary: "Superfícies do 2º grau e seus traços." },
-  { id: "sistemas", letter: "E", title: "Sistemas lineares e matrizes", summary: "Interpretação geométrica, escalonamento e determinante." },
-  { id: "espacos", letter: "F", title: "Espaços vetoriais", summary: "Combinação linear, base, mudança de base, núcleo e imagem." },
+  { id: "sistemas", letter: "E", title: "Sistemas lineares e matrizes", summary: "Interpretação geométrica, escalonamento, determinante e operações com matrizes." },
+  { id: "espacos", letter: "F", title: "Espaços vetoriais", summary: "Combinação linear, subespaços, base, dimensão, mudança de base, núcleo e imagem." },
   { id: "transformacoes", letter: "G", title: "Transformações lineares", summary: "A matriz como transformação do plano e do espaço." },
-  { id: "autovalores", letter: "H", title: "Autovalores e ortogonalidade", summary: "Autovetores, diagonalização, Gram–Schmidt e mínimos quadrados." },
+  { id: "autovalores", letter: "H", title: "Autovalores e ortogonalidade", summary: "Autovetores, diagonalização, Hamilton–Cayley, Gram–Schmidt e mínimos quadrados." },
 ];
 
 const m = (
@@ -67,16 +67,19 @@ export const MODULES: ModuleMeta[] = [
   m("E1", "sistemas-lineares", "Sistemas lineares: o que é a solução", "sistemas", "2d", "Cada equação é uma reta (ou plano); a solução é onde todas se encontram.", [], () => import("./E1")),
   m("E2", "eliminacao-de-gauss", "Eliminação de Gauss passo a passo", "sistemas", "3d", "Operações elementares mudam as equações, mas não a solução.", ["E1"], () => import("./E2")),
   m("E3", "determinante", "Determinante como área e volume", "sistemas", "2d", "O determinante é a área (ou volume) com sinal gerada pelas colunas.", ["A3"], () => import("./E3")),
+  m("E4", "operacoes-com-matrizes", "Operações com matrizes e inversa", "sistemas", "2d", "Soma, produto, transposta e a inversa calculada por Gauss–Jordan.", ["E2"], () => import("./E4")),
   m("F1", "combinacao-linear", "Combinação linear e espaço gerado", "espacos", "2d", "Quais vetores dá para alcançar com c₁v₁ + c₂v₂?", ["A1"], () => import("./F1")),
-  m("F2", "mudanca-de-base", "Base e mudança de base", "espacos", "2d", "O mesmo ponto tem coordenadas diferentes em bases diferentes.", ["F1"], () => import("./F2")),
-  m("F3", "nucleo-e-imagem", "Núcleo, imagem e posto", "espacos", "3d", "O que a matriz anula e o que ela alcança: posto + nulidade = n.", ["F1", "E1"], () => import("./F3")),
+  m("F2", "subespacos", "Subespaços, base e dimensão", "espacos", "3d", "Quando um conjunto é subespaço, e como achar uma base e a dimensão.", ["F1"], () => import("./F2")),
+  m("F3", "mudanca-de-base", "Base e mudança de base", "espacos", "2d", "O mesmo ponto tem coordenadas diferentes em bases diferentes.", ["F2"], () => import("./F3")),
+  m("F4", "nucleo-e-imagem", "Núcleo, imagem e posto", "espacos", "3d", "O que a matriz anula e o que ela alcança: posto + nulidade = n.", ["F2", "E1"], () => import("./F4")),
   m("G1", "matriz-transformacao", "Matriz como transformação do plano", "transformacoes", "2d", "As colunas da matriz são as imagens de e₁ e e₂.", ["F1"], () => import("./G1")),
   m("G2", "composicao-e-inversa", "Composição e inversa", "transformacoes", "2d", "Aplicar B e depois A é multiplicar AB; a ordem importa.", ["G1"], () => import("./G2")),
   m("G3", "transformacoes-3d", "Transformações no espaço", "transformacoes", "3d", "Rotações, reflexões, projeções e escalas aplicadas a um cubo.", ["G1"], () => import("./G3")),
   m("H1", "autovalores", "Autovalores e autovetores", "autovalores", "2d", "Direções que a matriz só estica: Av = λv.", ["G1"], () => import("./H1")),
   m("H2", "diagonalizacao", "Diagonalização e formas quadráticas", "autovalores", "2d", "Nos eixos dos autovetores a matriz simétrica vira diagonal.", ["H1", "C4"], () => import("./H2")),
-  m("H3", "gram-schmidt", "Projeção ortogonal e Gram–Schmidt", "autovalores", "2d", "Transforme uma base qualquer em uma base ortonormal.", ["A2"], () => import("./H3")),
-  m("H4", "minimos-quadrados", "Mínimos quadrados", "autovalores", "2d", "A reta que melhor se ajusta aos pontos, pelas equações normais.", ["H3"], () => import("./H4")),
+  m("H3", "diagonalizacao-3x3", "Diagonalização 3×3 e Hamilton–Cayley", "autovalores", "3d", "Multiplicidades, autoespaços, polinômio minimal e p(A) = 0.", ["H2"], () => import("./H3")),
+  m("H4", "gram-schmidt", "Projeção ortogonal e Gram–Schmidt", "autovalores", "2d", "Transforme uma base qualquer em uma base ortonormal.", ["A2"], () => import("./H4")),
+  m("H5", "minimos-quadrados", "Mínimos quadrados", "autovalores", "2d", "A reta que melhor se ajusta aos pontos, pelas equações normais.", ["H4"], () => import("./H5")),
 ];
 
 export const moduleBySlug = (slug: string) => MODULES.find((x) => x.slug === slug);
