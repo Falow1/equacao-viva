@@ -1,4 +1,4 @@
-import { o1, o2, o3, o5, tex, texDec, texPar, texRootApprox, texTuple } from "../math/format";
+import { clRow, o1, o2, o3, o5, tex, texDec, texPar, texRootApprox, texTuple } from "../math/format";
 import { angle, cross, dot, norm, triple, type Vec3 } from "../math/vec";
 import { fmtDeg } from "../math/format";
 const texDeg = (r: number) => fmtDeg(r).replace(",", "{,}").replace("°", "^\\circ");
@@ -55,7 +55,7 @@ export default function A3() {
         <ol className="steps">
           <li>
             <div className="step-n">1. Monte o determinante formal</div>
-            <Tex>{`${o1("\\vec u")} \\times ${o2("\\vec v")} = \\begin{vmatrix} \\vec i & \\vec j & \\vec k \\\\ ${o1(`${tex(u[0])} & ${tex(u[1])} & ${tex(u[2])}`)} \\\\ ${o2(`${tex(v[0])} & ${tex(v[1])} & ${tex(v[2])}`)} \\end{vmatrix}`}</Tex>
+            <Tex>{`${o1("\\vec u")} \\times ${o2("\\vec v")} = \\begin{vmatrix} \\vec i & \\vec j & \\vec k \\\\ ${clRow("obj1", u.map((x) => tex(x)))} \\\\ ${clRow("obj2", v.map((x) => tex(x)))} \\end{vmatrix}`}</Tex>
           </li>
           <li>
             <div className="step-n">2. Desenvolva pela primeira linha</div>
@@ -94,13 +94,13 @@ export default function A3() {
       <Block title="Equação">
         {!mixedMode ? (
           <LiveEquation
-            general={`${o1("\\vec u")} \\times ${o2("\\vec v")} = \\begin{vmatrix} \\vec i & \\vec j & \\vec k \\\\ ${o1("u_1 & u_2 & u_3")} \\\\ ${o2("v_1 & v_2 & v_3")} \\end{vmatrix}`}
+            general={`${o1("\\vec u")} \\times ${o2("\\vec v")} = \\begin{vmatrix} \\vec i & \\vec j & \\vec k \\\\ ${clRow("obj1", ["u_1", "u_2", "u_3"])} \\\\ ${clRow("obj2", ["v_1", "v_2", "v_3"])} \\end{vmatrix}`}
             current={`${o1(texTuple(u))} \\times ${o2(texTuple(v))} = ${o3(texTuple(n))}`}
           />
         ) : (
           <LiveEquation
-            general={`[${o1("\\vec u")}, ${o2("\\vec v")}, ${o5("\\vec w")}] = \\begin{vmatrix} ${o1("u_1 & u_2 & u_3")} \\\\ ${o2("v_1 & v_2 & v_3")} \\\\ ${o5("w_1 & w_2 & w_3")} \\end{vmatrix}`}
-            current={`\\begin{vmatrix} ${o1(u.map((x) => tex(x)).join(" & "))} \\\\ ${o2(v.map((x) => tex(x)).join(" & "))} \\\\ ${o5(w.map((x) => tex(x)).join(" & "))} \\end{vmatrix} = ${tex(mix)}`}
+            general={`[${o1("\\vec u")}, ${o2("\\vec v")}, ${o5("\\vec w")}] = \\begin{vmatrix} ${clRow("obj1", ["u_1", "u_2", "u_3"])} \\\\ ${clRow("obj2", ["v_1", "v_2", "v_3"])} \\\\ ${clRow("obj5", ["w_1", "w_2", "w_3"])} \\end{vmatrix}`}
+            current={`\\begin{vmatrix} ${clRow("obj1", u.map((x) => tex(x)))} \\\\ ${clRow("obj2", v.map((x) => tex(x)))} \\\\ ${clRow("obj5", w.map((x) => tex(x)))} \\end{vmatrix} = ${tex(mix)}`}
           />
         )}
       </Block>

@@ -91,6 +91,11 @@ export const o3 = (t: string) => cl("obj3", t);
 export const o4 = (t: string) => cl("obj4", t);
 export const o5 = (t: string) => cl("obj5", t);
 export const o6 = (t: string) => cl("obj6", t);
+/**
+ * Linha de matriz colorida: "a & b & c" com cada entrada na classe.
+ * O KaTeX não aceita "&" dentro de \htmlClass, então a cor vai célula por célula.
+ */
+export const clRow = (cls: string, cells: string[]): string => cells.map((c) => cl(cls, c)).join(" & ");
 
 /** "x₀ + k·v" no estilo de livro (x = 2 − 3t), omitindo zeros. */
 export function texAffine(c0: number, k: number, v = "t", opts: NumOpts = {}): string {
