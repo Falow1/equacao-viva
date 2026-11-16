@@ -11,13 +11,9 @@ import "./styles/layout.css";
 import "./styles/module.css";
 import "./styles/lab.css";
 import { App } from "./App";
+import { initTheme } from "./theme";
 
-try {
-  const t = localStorage.getItem("tema");
-  if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
-} catch {
-  /* sem armazenamento: segue o sistema */
-}
+initTheme();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

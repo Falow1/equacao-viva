@@ -24,13 +24,8 @@ export function useThemeColors() {
   const [c, setC] = useState(readColors);
   useEffect(() => {
     const upd = () => setC(readColors());
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    mq.addEventListener("change", upd);
     window.addEventListener("themechange", upd);
-    return () => {
-      mq.removeEventListener("change", upd);
-      window.removeEventListener("themechange", upd);
-    };
+    return () => window.removeEventListener("themechange", upd);
   }, []);
   return c;
 }

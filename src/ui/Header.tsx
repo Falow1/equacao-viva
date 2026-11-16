@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { MODULES, TRACKS, modulesOfTrack, trackById } from "../modules/registry";
 import { Logo, SITE_NAME, trackColor } from "./brand";
 import { Icon } from "./icons";
+import { currentTheme, saveTheme, type Theme } from "../theme";
 
 /** Fecha um painel ao clicar fora dele ou apertar Esc. */
 function useDismiss(open: boolean, close: () => void, ...refs: RefObject<HTMLElement | null>[]) {
@@ -24,19 +25,12 @@ function useDismiss(open: boolean, close: () => void, ...refs: RefObject<HTMLEle
 }
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState<string | undefined>(() => document.documentElement.dataset.theme);
-  const systemDark = typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const isDark = theme ? theme === "dark" : systemDark;
+  const [theme, setTheme] = useState<Theme>(currentTheme);
+  const isDark = theme === "dark";
   const toggle = () => {
-    const next = isDark ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem("tema", next);
-    } catch {
-      /* ignora */
-    }
+    const next: Theme = isDark ? "light" : "dark";
+    saveTheme(next);
     setTheme(next);
-    window.dispatchEvent(new Event("themechange"));
   };
   return (
     <button type="button" className="icon-btn" onClick={toggle} aria-label={isDark ? "Usar tema claro" : "Usar tema escuro"} title={isDark ? "Tema claro" : "Tema escuro"}>
