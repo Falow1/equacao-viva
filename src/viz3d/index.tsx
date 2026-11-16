@@ -140,7 +140,7 @@ function Axes3D({ R }: { R: number }) {
           <Arrow3D from={[-d[0] * L, -d[1] * L, -d[2] * L]} to={[d[0] * L, d[1] * L, d[2] * L]} color={col} width={1.5} head={0.22} />
           <Label3D at={[d[0] * (L + 0.35), d[1] * (L + 0.35), d[2] * (L + 0.35)]} text={name} color={txt} size={15} />
           {[-R, -R / 2, R / 2, R].map((k) =>
-            Number.isInteger(k) ? <Label3D key={k} at={[d[0] * k, d[1] * k, d[2] * k]} text={String(k).replace("-", "−")} color={txt} size={11} weight={400} offset={[6, 6]} /> : null,
+            Number.isInteger(k) ? <Label3D key={k} at={[d[0] * k, d[1] * k, d[2] * k]} text={String(k).replace("-", "−")} color={txt} size={12} weight={450} offset={[6, 6]} /> : null,
           )}
         </group>
       ))}

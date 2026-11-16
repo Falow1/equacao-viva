@@ -138,7 +138,7 @@ export default function H4() {
       />
       <Block title="Fórmula">
         <LiveEquation general={`${cls(WCOL, "\\vec w_k")} = \\vec v_k - \\sum_{j<k} \\frac{\\vec v_k\\cdot\\vec w_j}{\\vec w_j\\cdot\\vec w_j}\\,\\vec w_j`} current={stepTex} label={`Etapa ${stage} de ${lastStage}: ${stageName}`} />
-        <div className="row" style={{ gap: 8, marginTop: 10 }}>
+        <div className="row mt-10">
           <button type="button" className="btn" onClick={() => setStage(0)} disabled={stage === 0}>
             Início
           </button>

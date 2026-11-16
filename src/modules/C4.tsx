@@ -139,7 +139,7 @@ export default function C4() {
           {info.foci.length > 0 && <ResultRow label="Foco(s)" tex={info.foci.map((f) => texTuple(f.map((x) => Math.round(x * 100) / 100))).join(",\\ ")} />}
         </Results>
         {(info.kind === "vazio" || info.kind === "ponto" || info.kind.startsWith("retas") || info.kind === "reta-dupla") && (
-          <div style={{ marginTop: 8 }}>
+          <div className="mt-8">
             <Note kind="warn">
               Cônica degenerada.{" "}
               {info.kind === "vazio"
@@ -151,7 +151,7 @@ export default function C4() {
           </div>
         )}
         {isConic && (
-          <div className="row" style={{ marginTop: 10 }}>
+          <div className="row mt-10">
             <button type="button" className="btn" onClick={animate}>
               Girar e transladar os eixos
             </button>

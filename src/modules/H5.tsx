@@ -84,7 +84,7 @@ export default function H5() {
             <ResultRow label="Soma dos quadrados" tex={o3(`\\sum r_i^2 \\approx ${texDec(fit.sse, 3)}`)} />
           </Results>
           {fit.sse < 1e-9 && (
-            <div style={{ marginTop: 8 }}>
+            <div className="mt-8">
               <Note kind="ok">Resíduo zero: os pontos estão exatamente sobre a curva, o sistema original tem solução.</Note>
             </div>
           )}

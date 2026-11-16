@@ -10,11 +10,15 @@ export type TrackId =
   | "transformacoes"
   | "autovalores";
 
+export type ObjColor = "obj1" | "obj2" | "obj3" | "obj4" | "obj5" | "obj6";
+
 export interface Track {
   id: TrackId;
   letter: string;
   title: string;
   summary: string;
+  /** Cor da trilha (um dos tokens de objeto), usada em ícones e selos. */
+  color: ObjColor;
 }
 
 export interface ModuleMeta {
@@ -29,14 +33,14 @@ export interface ModuleMeta {
 }
 
 export const TRACKS: Track[] = [
-  { id: "vetores", letter: "A", title: "Vetores", summary: "Soma, produto escalar, ângulo, projeção, produto vetorial e misto." },
-  { id: "retas-planos", letter: "B", title: "Retas e planos", summary: "Equações da reta e do plano, posições relativas e distâncias." },
-  { id: "conicas", letter: "C", title: "Cônicas", summary: "Elipse, hipérbole, parábola e a equação geral do 2º grau." },
-  { id: "quadricas", letter: "D", title: "Quádricas", summary: "Superfícies do 2º grau e seus traços." },
-  { id: "sistemas", letter: "E", title: "Sistemas lineares e matrizes", summary: "Interpretação geométrica, escalonamento, determinante e operações com matrizes." },
-  { id: "espacos", letter: "F", title: "Espaços vetoriais", summary: "Combinação linear, subespaços, base, dimensão, mudança de base, núcleo e imagem." },
-  { id: "transformacoes", letter: "G", title: "Transformações lineares", summary: "A matriz como transformação do plano e do espaço." },
-  { id: "autovalores", letter: "H", title: "Autovalores e ortogonalidade", summary: "Autovetores, diagonalização, Hamilton–Cayley, Gram–Schmidt e mínimos quadrados." },
+  { id: "vetores", letter: "A", title: "Vetores", color: "obj1", summary: "Soma, produto escalar, ângulo, projeção, produto vetorial e misto." },
+  { id: "retas-planos", letter: "B", title: "Retas e planos", color: "obj3", summary: "Equações da reta e do plano, posições relativas e distâncias." },
+  { id: "conicas", letter: "C", title: "Cônicas", color: "obj4", summary: "Elipse, hipérbole, parábola e a equação geral do 2º grau." },
+  { id: "quadricas", letter: "D", title: "Quádricas", color: "obj6", summary: "Superfícies do 2º grau e seus traços." },
+  { id: "sistemas", letter: "E", title: "Sistemas lineares e matrizes", color: "obj5", summary: "Interpretação geométrica, escalonamento, determinante e operações com matrizes." },
+  { id: "espacos", letter: "F", title: "Espaços vetoriais", color: "obj2", summary: "Combinação linear, subespaços, base, dimensão, mudança de base, núcleo e imagem." },
+  { id: "transformacoes", letter: "G", title: "Transformações lineares", color: "obj1", summary: "A matriz como transformação do plano e do espaço." },
+  { id: "autovalores", letter: "H", title: "Autovalores e ortogonalidade", color: "obj4", summary: "Autovetores, diagonalização, Hamilton–Cayley, Gram–Schmidt e mínimos quadrados." },
 ];
 
 const m = (

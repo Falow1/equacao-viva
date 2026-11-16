@@ -112,7 +112,7 @@ export default function C1() {
           )}
         </Results>
         {circle && (
-          <div style={{ marginTop: 8 }}>
+          <div className="mt-8">
             <Note>Com a = b os dois focos coincidem com o centro: a elipse vira circunferência e e = 0.</Note>
           </div>
         )}

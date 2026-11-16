@@ -1,7 +1,10 @@
 import { Component, Suspense, type ReactNode } from "react";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { moduleBySlug } from "../modules/registry";
+import { useTitle } from "../ui/brand";
+import { ModuleSkeleton } from "../ui/Feedback";
 import { ModuleMetaContext } from "../ui/ModuleLayout";
+import { NotFound } from "./NotFound";
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
@@ -26,18 +29,13 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 export function ModulePage() {
   const { slug = "" } = useParams();
   const meta = moduleBySlug(slug);
-  if (!meta)
-    return (
-      <div className="page">
-        <h1>Módulo não encontrado</h1>
-        <p><Link to="/">Voltar para o início</Link></p>
-      </div>
-    );
+  useTitle(meta ? `${meta.id} ${meta.title}` : null);
+  if (!meta) return <NotFound what="Módulo" />;
   const C = meta.component;
   return (
     <ModuleMetaContext.Provider value={meta}>
       <ErrorBoundary key={slug}>
-        <Suspense fallback={<div className="page muted">Carregando módulo…</div>}>
+        <Suspense fallback={<ModuleSkeleton />}>
           <C key={slug} />
         </Suspense>
       </ErrorBoundary>

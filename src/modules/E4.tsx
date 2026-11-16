@@ -139,7 +139,7 @@ export default function E4() {
       <p>Por Gauss–Jordan: escalone [A | I] até o lado esquerdo virar I; o lado direito vira A⁻¹.</p>
       <ol className="steps">
         {gj.map((st, k) => (
-          <li key={k} style={{ opacity: k > step ? 0.45 : 1, cursor: "pointer" }} onClick={() => setStep(k)}>
+          <li key={k} className={`clickable${k > step ? " dim" : ""}`} onClick={() => setStep(k)}>
             <div className="step-n">
               {k}. <Tex>{st.tex}</Tex>
             </div>
@@ -177,7 +177,7 @@ export default function E4() {
       }
       steps={op === "produto" ? productSteps : op === "inversa" ? inverseSteps : undefined}
     >
-      <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+      <div className="row">
         <Segmented
           label="Tamanho"
           value={s.n as "2" | "3"}
@@ -202,7 +202,7 @@ export default function E4() {
       {op === "inversa" && (
         <Block title={`Gauss–Jordan em [A | I]: passo ${step} de ${gj.length - 1}`}>
           <LiveEquation general={step === 0 ? undefined : cur.tex} current={texMatrix(cur.matrix, { bar: n, maxDen: 100, cellClass: (r) => (cur.rows.includes(r) ? "obj5" : null) })} />
-          <div className="row" style={{ gap: 8, marginTop: 10 }}>
+          <div className="row mt-10">
             <button type="button" className="btn" onClick={() => setStep((k) => Math.max(0, k - 1))} disabled={step === 0}>
               ← Passo anterior
             </button>

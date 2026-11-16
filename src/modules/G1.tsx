@@ -92,7 +92,7 @@ export default function G1() {
           <ResultRow label="Fator de área">{`|det A| = ${Math.abs(Math.round(D * 1000) / 1000).toString().replace(".", ",")}`}</ResultRow>
           <ResultRow label="Orientação">{D > 1e-12 ? "Preservada" : D < -1e-12 ? "Invertida (a figura fica espelhada)" : "—"}</ResultRow>
         </Results>
-        <div style={{ marginTop: 8 }}>
+        <div className="mt-8">
           {Math.abs(D) < 1e-12 ? (
             <Note kind="warn">
               det A = 0: as colunas são paralelas (ou nulas) e o plano inteiro é achatado {M.every((r) => r.every((x) => Math.abs(x) < 1e-12)) ? "num ponto" : "numa reta"}.

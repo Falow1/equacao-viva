@@ -1,0 +1,99 @@
+/* Laboratório livre */
+.lab {
+  display: grid;
+  grid-template-columns: minmax(300px, 34fr) minmax(0, 66fr);
+  height: calc(100dvh - var(--header-h));
+}
+.lab-list {
+  overflow-y: auto;
+  padding: 16px;
+  border-right: 1px solid var(--border);
+}
+.lab-graph {
+  position: relative;
+  min-width: 0;
+  background: var(--surface);
+  touch-action: none;
+}
+.lab-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.lab-head .seg { flex: none; flex-wrap: nowrap; }
+.lab-title { font-size: 20px; margin: 0 0 4px; }
+.lab-head .summary { margin: 0; color: var(--text-2); font-size: 14px; }
+.lab-empty {
+  margin: 0 0 8px;
+  padding: 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  color: var(--text-3);
+  font-size: 14px;
+  text-align: center;
+}
+.lab-item {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lab-item-main { min-width: 0; }
+.lab-item .swatch {
+  width: 14px;
+  height: 14px;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.lab-item .swatch.off { opacity: 0.25; }
+.lab-item input.expr {
+  width: 100%;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+.lab-item input.expr:focus { border-color: var(--accent); outline: none; box-shadow: var(--focus-ring); }
+.lab-item .err { margin-top: 4px; color: var(--bad); font-size: 12px; }
+.lab-item .kind { margin-top: 4px; color: var(--text-3); font-size: 12px; }
+.add-expr {
+  width: 100%;
+  justify-content: center;
+  border-style: dashed;
+  color: var(--text-2);
+}
+.lab-params { margin-top: 18px; }
+.lab-syntax {
+  margin-top: 18px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lab-syntax summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.lab-syntax ul { margin: 8px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+
+@media (max-width: 999px) {
+  .lab { display: flex; flex-direction: column-reverse; height: auto; }
+  .lab-graph {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 10;
+    height: 55dvh;
+    border-bottom: 1px solid var(--border);
+  }
+  .lab-list { border-right: 0; }
+}

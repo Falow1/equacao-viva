@@ -98,7 +98,7 @@ export default function H2() {
         ) : (
           <Note>{e.kind === "repeated-full" ? "A já é diagonal (A = λI): qualquer par de eixos ortogonais serve." : "Autovalores iguais."}</Note>
         )}
-        <div style={{ marginTop: 8 }}>
+        <div className="mt-8">
           <Note kind={kind === "elipse" ? "ok" : kind === "hiperbole" ? "info" : "warn"}>{KIND_TEXT[kind]}</Note>
         </div>
       </Block>

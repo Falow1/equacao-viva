@@ -1,4 +1,6 @@
-# GAAL Interativo
+# Equação Viva
+
+**Geometria Analítica e Álgebra Linear** com gráficos interativos: mexa no gráfico e veja a equação mudar.
 
 Site para estudar **Geometria Analítica e Álgebra Linear** mexendo nos gráficos. Cada módulo mostra uma equação ao lado do seu gráfico, e os dois
 andam juntos: arrastar um ponto muda os números da equação, e editar um número move o desenho. O planejamento completo está em
@@ -73,15 +75,19 @@ src/
   viz2d/      componentes de gráfico 2D (sobre o Mafs)
   viz3d/      cena 3D (Three.js + React Three Fiber), com eixo z para cima
   modules/    um arquivo por módulo (A1.tsx … H4.tsx) e o registro em registry.ts
-  pages/      página inicial, trilhas, módulo, laboratório e sobre
-  ui/         controles, equação viva, layout dos módulos
+  pages/      página inicial, trilhas, módulo, laboratório, sobre e página não encontrada
+  ui/         cabeçalho, rodapé, logo, ícones, controles, equação viva e layout dos módulos
+  styles/     tokens (cores e medidas), base, componentes, páginas, módulo e laboratório
   state/      estado sincronizado com a URL
+  credits.ts  créditos do trabalho (aparecem no rodapé e na página Sobre)
 tests/        testes do núcleo matemático (Vitest)
 ```
+
+Para mudar os créditos (curso, professor, autores, período), edite `src/credits.ts`; campos vazios não aparecem no site.
 
 Convenções da notação: vírgula decimal, coordenadas separadas por ponto e vírgula, `(2; −1)`, e frações quando o número é uma fração simples.
 
 ## Tecnologias
 
-React, TypeScript, Vite, [Mafs](https://mafs.dev) (2D), [Three.js](https://threejs.org) com React Three Fiber (3D), [KaTeX](https://katex.org)
+React, TypeScript, Vite, fonte Inter, [Mafs](https://mafs.dev) (2D), [Three.js](https://threejs.org) com React Three Fiber (3D), [KaTeX](https://katex.org)
 (equações) e [math.js](https://mathjs.org) (expressões do Laboratório).

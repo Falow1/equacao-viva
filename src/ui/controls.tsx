@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { fmt } from "../math/format";
 import { Tex } from "./Tex";
 
@@ -165,7 +165,7 @@ export function MatrixInput({
 }) {
   const cols = value[0].length;
   return (
-    <div className="row" style={{ alignItems: "center" }}>
+    <div className="row">
       {label && <Tex>{label}</Tex>}
       <div className="matrix-input" style={{ gridTemplateColumns: `repeat(${cols}, auto)` }} role="group" aria-label={label ?? "matriz"}>
         {value.map((r, i) =>
@@ -195,7 +195,7 @@ export function Presets({ items }: { items: Preset[] }) {
       <div className="block-title">Exemplos</div>
       <div className="presets">
         {items.map((p) => (
-          <button key={p.label} type="button" className="btn" onClick={p.apply}>
+          <button key={p.label} type="button" className="pill" onClick={p.apply}>
             {p.label}
           </button>
         ))}
@@ -235,17 +235,45 @@ export function Block({ title, children }: { title?: ReactNode; children: ReactN
   );
 }
 
-/** Equação viva: forma geral em cima e valores substituídos embaixo. */
-export function LiveEquation({ general, current, label }: { general?: string; current: string; label?: string }) {
+/**
+ * Marca com `fade-r` as fórmulas que continuam além da borda direita (e ainda não foram roladas até o fim),
+ * para o CSS desenhar um degradê indicando que há mais.
+ */
+function useScrollFade(ref: RefObject<HTMLElement | null>) {
+  const update = () => {
+    ref.current?.querySelectorAll<HTMLElement>(".katex-display").forEach((d) => {
+      d.classList.toggle("fade-r", d.scrollWidth - d.clientWidth - d.scrollLeft > 2);
+    });
+  };
+  useLayoutEffect(update);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    el.addEventListener("scroll", update, true);
+    return () => {
+      ro.disconnect();
+      el.removeEventListener("scroll", update, true);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
+/** Equação viva: forma geral em cima e valores substituídos embaixo. `wide` reduz a fonte para fórmulas largas (matrizes 3×3). */
+export function LiveEquation({ general, current, label, wide = false }: { general?: string; current: string; label?: string; wide?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useScrollFade(ref);
   return (
-    <div className="equation">
+    <div className={`equation${wide ? " wide" : ""}`} ref={ref}>
       {label && <div className="eq-label">{label}</div>}
       {general && (
         <div className="general">
+          <div className="eq-tag">Forma geral</div>
           <Tex block>{general}</Tex>
         </div>
       )}
-      <div className="current">
+      <div className={`current${general ? " live" : ""}`}>
+        {general && <div className="eq-tag">Agora</div>}
         <Tex block>{current}</Tex>
       </div>
     </div>
@@ -267,34 +295,6 @@ export function ResultRow({ label, tex, children }: { label: ReactNode; tex?: st
 
 export function Note({ kind = "info", children }: { kind?: "info" | "ok" | "warn" | "bad"; children: ReactNode }) {
   return <div className={`note ${kind === "info" ? "" : kind}`} role={kind === "bad" || kind === "warn" ? "status" : undefined}>{children}</div>;
-}
-
-export function Tabs({ tabs }: { tabs: { id: string; label: string; content: ReactNode }[] }) {
-  const [active, setActive] = useState(tabs[0]?.id);
-  const base = useId();
-  const current = tabs.find((t) => t.id === active) ?? tabs[0];
-  return (
-    <div className="tabs block">
-      <div role="tablist">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            role="tab"
-            id={`${base}-${t.id}`}
-            aria-selected={t.id === current.id}
-            aria-controls={`${base}-${t.id}-p`}
-            onClick={() => setActive(t.id)}
-            type="button"
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <div className="tabpanel" role="tabpanel" id={`${base}-${current.id}-p`} aria-labelledby={`${base}-${current.id}`}>
-        {current.content}
-      </div>
-    </div>
-  );
 }
 
 /** Mostra número formatado (texto). */

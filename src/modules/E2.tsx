@@ -53,7 +53,7 @@ export default function E2() {
         </>
       }
     >
-      <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
+      <div className="row">
         <Segmented
           label="Tamanho"
           value={s.dim as "2" | "3"}
@@ -75,7 +75,7 @@ export default function E2() {
       </div>
       <Block title={`Passo ${i} de ${steps.length - 1}`}>
         <LiveEquation label={i === 0 ? "Matriz inicial" : "Operação"} general={i === 0 ? undefined : cur.tex} current={mtx(cur.matrix, cur.rows)} />
-        <div className="row" style={{ gap: 8, marginTop: 10 }}>
+        <div className="row mt-10">
           <button type="button" className="btn" onClick={() => setI(0)} disabled={i === 0}>
             Início
           </button>
@@ -106,7 +106,7 @@ export default function E2() {
       <Block title="Todas as operações">
         <ol className="steps">
           {steps.map((st, k) => (
-            <li key={k} style={{ opacity: k > i ? 0.45 : 1, cursor: "pointer" }} onClick={() => setI(k)}>
+            <li key={k} className={`clickable${k > i ? " dim" : ""}`} onClick={() => setI(k)}>
               <div className="step-n">
                 {k}. <Tex>{st.tex}</Tex>
               </div>

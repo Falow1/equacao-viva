@@ -80,7 +80,7 @@ export default function D1() {
             </option>
           ))}
         </select>
-        <div style={{ marginTop: 10 }}>
+        <div className="mt-10">
           <LiveEquation current={def.equation(s.a, s.b, s.c)} />
         </div>
         <Note>{def.note}</Note>
@@ -93,7 +93,7 @@ export default function D1() {
         </div>
       </Block>
       <Block title="Plano de corte">
-        <div className="row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
+        <div className="row between mb-8">
           <Segmented
             label="Eixo do plano de corte"
             value={axis}
@@ -104,7 +104,7 @@ export default function D1() {
               { value: "z", label: "z = k" },
             ]}
           />
-          <label className="row" style={{ fontSize: 14 }}>
+          <label className="row small-text">
             <input type="checkbox" checked={s.cut} onChange={(e) => set({ cut: e.target.checked })} /> Mostrar corte
           </label>
         </div>
@@ -117,7 +117,7 @@ export default function D1() {
                 <strong className="obj3">{info.kind === "vazio" ? "Vazio: o plano não encontra a superfície" : info.name}</strong>
               </ResultRow>
             </Results>
-            <div className="mini-graph" style={{ marginTop: 10 }} aria-label={`Traço no plano ${axis} = k, eixos ${u} e ${v}`}>
+            <div className="mini-graph mt-10" aria-label={`Traço no plano ${axis} = k, eixos ${u} e ${v}`}>
               <Plane2D x={[-R, R]} y={[-R, R]} label={`Traço no plano ${u}${v}`}>
                 <ImplicitCurve F={F2} color="var(--obj3)" res={120} />
               </Plane2D>
@@ -133,19 +133,19 @@ export default function D1() {
       <div className="block">
         <div className="block-title">Exemplos</div>
         <div className="presets">
-          <button type="button" className="btn" onClick={() => set({ q: "elipsoide", a: 2, b: 2, c: 2, axis: "z", k: 1 })}>
+          <button type="button" className="pill" onClick={() => set({ q: "elipsoide", a: 2, b: 2, c: 2, axis: "z", k: 1 })}>
             Esfera
           </button>
-          <button type="button" className="btn" onClick={() => set({ q: "cone", a: 1, b: 1, c: 1, axis: "y", k: 1 })}>
+          <button type="button" className="pill" onClick={() => set({ q: "cone", a: 1, b: 1, c: 1, axis: "y", k: 1 })}>
             Cone cortado: hipérbole
           </button>
-          <button type="button" className="btn" onClick={() => set({ q: "cone", a: 1, b: 1, c: 1, axis: "z", k: 0 })}>
+          <button type="button" className="pill" onClick={() => set({ q: "cone", a: 1, b: 1, c: 1, axis: "z", k: 0 })}>
             Cone em z = 0: ponto
           </button>
-          <button type="button" className="btn" onClick={() => set({ q: "paraboloide-hiperbolico", a: 1.5, b: 1.5, c: 1, axis: "z", k: 0 })}>
+          <button type="button" className="pill" onClick={() => set({ q: "paraboloide-hiperbolico", a: 1.5, b: 1.5, c: 1, axis: "z", k: 0 })}>
             Sela em z = 0
           </button>
-          <button type="button" className="btn" onClick={() => set({ q: "hiperboloide2", a: 1, b: 1, c: 1, axis: "z", k: 0.5 })}>
+          <button type="button" className="pill" onClick={() => set({ q: "hiperboloide2", a: 1, b: 1, c: 1, axis: "z", k: 0.5 })}>
             Duas folhas sem corte
           </button>
         </div>

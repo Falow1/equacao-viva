@@ -54,7 +54,9 @@ export default function H3() {
       {groups.flatMap((g, i) =>
         g.basis.map((bv, j) => {
           const k = 1.6 / Math.max(1e-9, norm(bv));
-          return <Arrow3D key={`${i}${j}`} to={[bv[0] * k, bv[1] * k, bv[2] * k]} color={GCOL[i]} label={`λ = ${String(Math.round(g.value * 100) / 100).replace(".", ",")}`} width={2.5} />;
+          // num autoespaço de dimensão 2 só o primeiro vetor da base leva o rótulo, para não repetir "λ = …"
+          const label = j === 0 ? `λ = ${String(Math.round(g.value * 100) / 100).replace(".", ",").replace("-", "−")}` : undefined;
+          return <Arrow3D key={`${i}${j}`} to={[bv[0] * k, bv[1] * k, bv[2] * k]} color={GCOL[i]} label={label} width={2.5} />;
         }),
       )}
       <Arrow3D to={Av} color="obj2" label="Av" width={aligned ? 5 : 3} />
@@ -151,18 +153,19 @@ export default function H3() {
       </Block>
       <Block title="Hamilton–Cayley">
         <LiveEquation
+          wide
           general={`p(A) = A^3 ${texSigned(a)}A^2 ${texSigned(b)}A ${texSigned(c)}I`}
           current={`${texMatrix(hc.A3)} ${texSigned(a)}${texMatrix(hc.A2)} ${texSigned(b)}${texMatrix(A)} ${texSigned(c)}I = ${texMatrix(hc.pA)}`}
         />
         {hc.inv && (
-          <div style={{ marginTop: 8 }}>
+          <div className="mt-8">
             <LiveEquation label="Inversa pelo teorema" current={`A^{-1} = -\\dfrac{1}{${tex(c)}}\\left(A^2 ${texSigned(a)}A ${texSigned(b)}I\\right) = ${texMatrix(hc.inv, { maxDen: 60 })}`} />
           </div>
         )}
       </Block>
       <Block title="Teste com um vetor">
         <LiveEquation current={`A${o1(texTuple(v))} = ${o2(texTuple(Av))}${aligned && nv > 1e-9 ? ` = ${tex(dot(Av, v) / dot(v, v))}\\,${o1(texTuple(v))}` : ""}`} />
-        <div style={{ marginTop: 8 }}>
+        <div className="mt-8">
           {aligned ? <Note kind="ok">v é autovetor: está sobre um autoespaço.</Note> : <Note>Av muda de direção; coloque v sobre uma das retas ou planos coloridos.</Note>}
         </div>
       </Block>

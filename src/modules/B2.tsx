@@ -78,20 +78,20 @@ export default function B2() {
             {rel.kind === "concorrentes" && <ResultRow label="Ângulo" tex={`${angleTex} \\Rightarrow \\theta \\approx ${fmtDeg(rel.angle).replace("°", "^\\circ").replace(",", "{,}")}`} />}
             {rel.kind === "paralelas" && <ResultRow label="Distância entre elas" tex={texDec(rel.distance)} />}
           </Results>
-          {rel.kind === "paralelas" && <div style={{ marginTop: 8 }}><Note>As retas são paralelas: o sistema formado por elas não tem solução.</Note></div>}
-          {rel.kind === "coincidentes" && <div style={{ marginTop: 8 }}><Note>As equações são múltiplas uma da outra: o sistema tem infinitas soluções.</Note></div>}
+          {rel.kind === "paralelas" && <div className="mt-8"><Note>As retas são paralelas: o sistema formado por elas não tem solução.</Note></div>}
+          {rel.kind === "coincidentes" && <div className="mt-8"><Note>As equações são múltiplas uma da outra: o sistema tem infinitas soluções.</Note></div>}
         </Block>
       )}
       {dist && target && (
         <Block title="Distância de P à reta">
-          <div className="row" style={{ marginBottom: 8 }}>
+          <div className="row mb-8">
             <Segmented label="Reta alvo" value={s.alvo as "r" | "s"} onChange={(alvo) => set({ alvo })} options={[{ value: "r", label: "até r" }, { value: "s", label: "até s" }]} />
           </div>
           <LiveEquation
             general={`d(P, ${s.alvo}) = \\dfrac{|a x_0 + b y_0 + c|}{\\sqrt{a^2 + b^2}}`}
             current={`d = \\dfrac{|${texPar(target.a)}\\cdot${texPar(P[0])} + ${texPar(target.b)}\\cdot${texPar(P[1])} + ${texPar(target.c)}|}{\\sqrt{${tex(target.a ** 2)} + ${tex(target.b ** 2)}}} = \\dfrac{${tex(Math.abs(dist.num))}}{${texRootApprox(dist.den).split("\\approx")[0]}} ${dist.d > 0 ? `\\approx ${o3(texDec(dist.d))}` : "= 0"}`}
           />
-          {dist.d < 1e-9 && <div style={{ marginTop: 8 }}><Note kind="ok">P está sobre a reta: a distância é zero.</Note></div>}
+          {dist.d < 1e-9 && <div className="mt-8"><Note kind="ok">P está sobre a reta: a distância é zero.</Note></div>}
         </Block>
       )}
       <Block title="Controles">

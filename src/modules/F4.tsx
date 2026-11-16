@@ -100,7 +100,7 @@ export default function F4() {
       </Note>
       <Block title="Controles">
         <MatrixInput label="A =" value={A} onChange={(m) => set({ A: m })} colClass={(j) => ["obj1", "obj2", "obj5"][j]} />
-        <div style={{ marginTop: 8 }}>
+        <div className="mt-8">
           <LiveEquation current={`A = ${texMatrix(A, { cellClass: (_i, j) => ["obj1", "obj2", "obj5"][j] })}`} />
         </div>
       </Block>

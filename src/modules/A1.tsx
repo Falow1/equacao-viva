@@ -124,7 +124,7 @@ export default function A1() {
           <ResultRow label="‖resultado‖" tex={texRootApprox(result[0] ** 2 + result[1] ** 2)} />
         </Results>
         {zero && (
-          <div style={{ marginTop: 8 }}>
+          <div className="mt-8">
             <Note kind="warn">
               {mode === "soma"
                 ? "O resultado é o vetor nulo: u e v têm o mesmo comprimento e sentidos opostos (v = −u)."

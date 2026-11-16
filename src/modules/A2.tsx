@@ -102,7 +102,7 @@ export default function A2() {
               <ResultRow label={<>proj<sub>v</sub> u</>} tex={`${tex(k)}\\,${o2("\\vec v")} = ${o3(texTuple(p ?? [0, 0]))}`} />
               <ResultRow label="u − proj" tex={o4(texTuple(perp ?? [0, 0]))} />
             </Results>
-            <div style={{ marginTop: 8 }}>
+            <div className="mt-8">
               {orth ? (
                 <Note kind="ok">u · v = 0: os vetores são ortogonais (θ = 90°) e a projeção é o vetor nulo.</Note>
               ) : uv < 0 ? (

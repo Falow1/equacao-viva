@@ -82,12 +82,12 @@ export default function G2() {
       </Block>
       <Block title="Controles">
         <div className="controls">
-          <div className="row" style={{ gap: 16 }}>
+          <div className="row gap-16">
             <MatrixInput label={o1("A =")} value={A} onChange={(m) => set({ A: m })} />
             {mode !== "inv" && <MatrixInput label={o2("B =")} value={B} onChange={(m) => set({ B: m })} />}
           </div>
           <Slider label="Etapa" value={e} onChange={setE} min={0} max={2} step={0.01} />
-          <p className="muted" style={{ margin: 0, fontSize: 14 }}>{stageText}</p>
+          <p className="muted small-text m-0">{stageText}</p>
           <div className="row">
             <button type="button" className="btn" onClick={() => run(0, 2, 2400)}>Animar as duas etapas</button>
           </div>
@@ -110,7 +110,7 @@ export default function G2() {
           <ResultRow label="A⁻¹" tex={Ainv ? `\\dfrac{1}{${tex(det(A))}}${texMatrix([[A[1][1], -A[0][1]], [-A[1][0], A[0][0]]])} = ${texMatrix(Ainv)}` : "\\text{não existe}"} />
         </Results>
         {mode === "inv" && !Ainv && (
-          <div style={{ marginTop: 8 }}>
+          <div className="mt-8">
             <Note kind="warn">det A = 0: A achata o plano numa reta. Como vários pontos vão para o mesmo lugar, não existe transformação que desfaça A.</Note>
           </div>
         )}

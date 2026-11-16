@@ -162,7 +162,7 @@ function EqPanel({ s, set }: { s: S; set: SetS }) {
         <div className="controls">
           <VecInput label="(a_1;\ b_1;\ c_1)" value={s.n1} onChange={(x) => set({ n1: x })} />
           <Slider tex="d_1" value={s.d1} onChange={(x) => set({ d1: x })} min={-6} max={6} />
-          <label className="row" style={{ fontSize: 14 }}>
+          <label className="row small-text">
             <input type="checkbox" checked={s.two} onChange={(e) => set({ two: e.target.checked })} /> Segunda equação
           </label>
           {s.two && (

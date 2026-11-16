@@ -92,7 +92,7 @@ export default function H1() {
           general={`A${o1("\\vec v")} = \\lambda${o1("\\vec v")}`}
           current={`${texMatrix(A)}${o1(texMatrix([[v[0]], [v[1]]]))} = ${o2(texMatrix([[Av[0]], [Av[1]]]))}${aligned ? ` = ${tex(lambdaHere)}${o1(texMatrix([[v[0]], [v[1]]]))}` : ""}`}
         />
-        <div style={{ marginTop: 8 }}>
+        <div className="mt-8">
           {nv < 1e-9 ? (
             <Note kind="warn">v = 0 satisfaz Av = λv para qualquer λ, por isso o vetor nulo nunca é chamado de autovetor.</Note>
           ) : aligned ? (
@@ -105,7 +105,7 @@ export default function H1() {
       <Block title="Controles">
         <div className="controls">
           <MatrixInput label="A =" value={A} onChange={(m) => set({ A: m })} />
-          <label className="row" style={{ fontSize: 14 }}>
+          <label className="row small-text">
             <input type="checkbox" checked={s.circ} onChange={(e) => set({ circ: e.target.checked })} /> Mostrar círculo e sua imagem
           </label>
         </div>
@@ -127,7 +127,7 @@ export default function H1() {
           <ResultRow label="Autovalores" tex={valuesTex} />
           {e.kind !== "complex" && <ResultRow label="Autovetores" tex={o4(e.vectors.map((ev) => texTuple(ev)).join(",\\ "))} />}
         </Results>
-        <div style={{ marginTop: 8 }}>
+        <div className="mt-8">
           {e.kind === "complex" && <Note kind="warn">Autovalores complexos: nenhuma direção real é preservada (a matriz gira os vetores).</Note>}
           {e.kind === "repeated-defective" && <Note kind="warn">Autovalor repetido com uma só direção de autovetores: a matriz não é diagonalizável.</Note>}
           {e.kind === "repeated-full" && <Note>A = λI: todo vetor não nulo é autovetor.</Note>}

@@ -3,7 +3,9 @@ import { fmt } from "../math/format";
 import { compileExpr, parseBracketNumbers, splitTuple, type CompiledExpr } from "../math/parse";
 import { TransformView } from "../modules/shared2d";
 import { useUrlState } from "../state/useUrlState";
+import { useTitle } from "../ui/brand";
 import { Segmented, Slider } from "../ui/controls";
+import { Icon } from "../ui/icons";
 import { Arrow, Dot, ImplicitCurve, Plane2D, Plot, type P2 } from "../viz2d";
 import { Arrow3D, ImplicitSurface, Point3D, Scene3D, Segments3D, type V3 } from "../viz3d";
 
@@ -153,6 +155,10 @@ function paramsOf(it: Item): string[] {
 const DEF2 = ["y = a*x^2 - 2", "x^2 + y^2 = 9", "(2*cos(t), 2*sin(2*t))", "(1, 2)", "v = [2, -1]"].join("\n");
 const DEF3 = ["z = (x^2 - y^2)/4", "(2*cos(t), 2*sin(t), t/3)", "(1, 1, 2)", "[1, 2, 2]"].join("\n");
 
+/** Exemplos de um clique (acrescentam uma linha à lista). */
+const EX2 = ["y = x^2", "y = a*x + b", "x^2 + y^2 = 9", "x^2/9 - y^2/4 = 1", "(3*cos(t), 2*sin(2*t))", "v = [2, 1]", "M = [[1, 1], [0, 1]]"];
+const EX3 = ["z = x*y", "x^2 + y^2 + z^2 = 9", "z = a*x^2 - y^2", "x^2 + y^2 - z^2 = 1", "(2*cos(t), 2*sin(t), t/3)", "[1, 2, 2]"];
+
 function parseP(s: string): Scope {
   const out: Scope = {};
   for (const kv of s.split(",")) {
@@ -163,6 +169,7 @@ function parseP(s: string): Scope {
 }
 
 export default function Lab() {
+  useTitle("Laboratório");
   const [s, set] = useUrlState({ d: "2", e2: DEF2, e3: DEF3, p: "", h: [] as number[], t0: 0, t1: 6.283 });
   const dim = (s.d === "3" ? 3 : 2) as 2 | 3;
   const text = dim === 2 ? s.e2 : s.e3;
@@ -183,6 +190,11 @@ export default function Lab() {
   const setParam = (k: string, v: number) => set({ p: Object.entries({ ...pvals, [k]: v }).map(([a, b]) => `${a}:${Math.round(b * 1000) / 1000}`).join(",") });
   const focus = (i: number) => window.setTimeout(() => inputs.current[i]?.focus(), 0);
   const anyParam = items.some((it) => it.kind === "parametrica");
+  const empty = lines.every((l) => l.trim() === "");
+  const addExample = (ex: string) => {
+    const filled = lines.filter((l) => l.trim() !== "");
+    setLines([...filled, ex]);
+  };
 
   const ev = (f: CompiledExpr, extra: Scope = {}) => f.fn({ ...scope, ...extra });
 
@@ -228,11 +240,11 @@ export default function Lab() {
   return (
     <div className="lab">
       <section className="lab-list" aria-label="Lista de expressões">
-        <h1 style={{ fontSize: 20, margin: "0 0 4px" }}>Laboratório livre</h1>
-        <p className="summary" style={{ marginTop: 0 }}>
-          Digite expressões; o tipo é detectado sozinho. Letras livres (a, b, k…) viram sliders.
-        </p>
-        <div className="row" style={{ marginBottom: 12 }}>
+        <div className="lab-head">
+          <div>
+            <h1 className="lab-title">Laboratório livre</h1>
+            <p className="summary">Digite expressões; o tipo é detectado sozinho. Letras livres (a, b, k…) viram sliders.</p>
+          </div>
           <Segmented
             label="Dimensão"
             value={s.d as "2" | "3"}
@@ -243,6 +255,17 @@ export default function Lab() {
             ]}
           />
         </div>
+        <div className="block">
+          <div className="block-title">Exemplos</div>
+          <div className="presets">
+            {(dim === 2 ? EX2 : EX3).map((ex) => (
+              <button key={ex} type="button" className="pill mono" onClick={() => addExample(ex)} title="Acrescentar à lista">
+                {ex}
+              </button>
+            ))}
+          </div>
+        </div>
+        {empty && <p className="lab-empty">Digite uma expressão ou escolha um exemplo acima.</p>}
         {lines.map((line, i) => {
           const it = items[i];
           const color = COLORS[i % COLORS.length];
@@ -258,7 +281,7 @@ export default function Lab() {
                 aria-pressed={!off}
                 onClick={() => set({ h: off ? (s.h as number[]).filter((x) => x !== i) : [...(s.h as number[]), i] })}
               />
-              <div style={{ minWidth: 0 }}>
+              <div className="lab-item-main">
                 <input
                   ref={(el) => {
                     inputs.current[i] = el;
@@ -292,15 +315,15 @@ export default function Lab() {
                   </div>
                 ) : null}
               </div>
-              <button type="button" className="btn small" aria-label={`Remover expressão ${i + 1}`} onClick={() => setLines(lines.length > 1 ? lines.filter((_, j) => j !== i) : [""])}>
-                ×
+              <button type="button" className="icon-btn small ghost" aria-label={`Remover expressão ${i + 1}`} title="Remover" onClick={() => setLines(lines.length > 1 ? lines.filter((_, j) => j !== i) : [""])}>
+                <Icon name="close" size={16} />
               </button>
             </div>
           );
         })}
         <button
           type="button"
-          className="btn"
+          className="btn add-expr"
           onClick={() => {
             setLines([...lines, ""]);
             focus(lines.length);
@@ -309,7 +332,7 @@ export default function Lab() {
           + Expressão
         </button>
         {(freeParams.length > 0 || anyParam) && (
-          <div className="block" style={{ marginTop: 16 }}>
+          <div className="block lab-params">
             <div className="block-title">Parâmetros</div>
             {freeParams.map((p) => (
               <Slider key={p} label={p} value={scope[p]} onChange={(v) => setParam(p, v)} min={-5} max={5} step={0.1} />
@@ -322,9 +345,9 @@ export default function Lab() {
             )}
           </div>
         )}
-        <details className="block" style={{ marginTop: 16 }}>
-          <summary style={{ cursor: "pointer", fontWeight: 600 }}>O que dá para digitar</summary>
-          <ul style={{ paddingLeft: 18, fontSize: 14, lineHeight: 1.7 }}>
+        <details className="block lab-syntax">
+          <summary>Sintaxe: o que dá para digitar</summary>
+          <ul>
             {dim === 2 ? (
               <>
                 <li><code>y = x^2 - 3</code> função</li>
