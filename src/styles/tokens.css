@@ -1,0 +1,126 @@
+:root {
+  --bg: #f8f6f1;
+  --surface: #ffffff;
+  --surface-2: #f1eee6;
+  --surface-3: #e8e4da;
+  --text: #1d1b18;
+  --text-2: #57534b;
+  --text-3: #8a857b;
+  --border: #e2ddd2;
+  --border-strong: #cbc5b8;
+  --accent: #2b59c3;
+  --accent-soft: #e4ebfa;
+  --ok: #1d7a46;
+  --ok-soft: #e2f3e8;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --bad: #b3261e;
+  --bad-soft: #fbe5e3;
+
+  /* Cores de objetos matemáticos (mesma cor no gráfico e na fórmula) */
+  --obj1: #2463d1;
+  --obj2: #d1432a;
+  --obj3: #17803d;
+  --obj4: #7a3fd6;
+  --obj5: #b8650a;
+  --obj6: #0b7f96;
+  --obj-muted: #8a857b;
+
+  --grid: #e6e1d6;
+  --grid-strong: #cfc8ba;
+  --axis: #6f6a60;
+
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Consolas", monospace;
+  --header-h: 56px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171b;
+    --surface: #1d2026;
+    --surface-2: #252931;
+    --surface-3: #2e333c;
+    --text: #ebe8e1;
+    --text-2: #b4afa5;
+    --text-3: #857f74;
+    --border: #2f343d;
+    --border-strong: #454b56;
+    --accent: #8fb0ff;
+    --accent-soft: #24304a;
+    --ok: #6fd39a;
+    --ok-soft: #1c3326;
+    --warn: #f2bd5c;
+    --warn-soft: #3a2e17;
+    --bad: #ff8a80;
+    --bad-soft: #3e1f1d;
+    --obj1: #6ea2ff;
+    --obj2: #ff7a5c;
+    --obj3: #5ccf85;
+    --obj4: #b48cff;
+    --obj5: #f0a63c;
+    --obj6: #3fc6dc;
+    --obj-muted: #8d887e;
+    --grid: #262a31;
+    --grid-strong: #363b45;
+    --axis: #9a958b;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #15171b;
+  --surface: #1d2026;
+  --surface-2: #252931;
+  --surface-3: #2e333c;
+  --text: #ebe8e1;
+  --text-2: #b4afa5;
+  --text-3: #857f74;
+  --border: #2f343d;
+  --border-strong: #454b56;
+  --accent: #8fb0ff;
+  --accent-soft: #24304a;
+  --ok: #6fd39a;
+  --ok-soft: #1c3326;
+  --warn: #f2bd5c;
+  --warn-soft: #3a2e17;
+  --bad: #ff8a80;
+  --bad-soft: #3e1f1d;
+  --obj1: #6ea2ff;
+  --obj2: #ff7a5c;
+  --obj3: #5ccf85;
+  --obj4: #b48cff;
+  --obj5: #f0a63c;
+  --obj6: #3fc6dc;
+  --obj-muted: #8d887e;
+  --grid: #262a31;
+  --grid-strong: #363b45;
+  --axis: #9a958b;
+  color-scheme: dark;
+}
+
+/* Mafs acompanha os tokens (seletor duplo para vencer o core.css do Mafs) */
+.MafsView.MafsView {
+  --grid-line-subdivision-color: var(--grid);
+  --mafs-bg: var(--surface);
+  --mafs-fg: var(--text);
+  --mafs-line-color: var(--grid);
+  --mafs-origin-color: var(--axis);
+  --mafs-blue: var(--obj1);
+  --mafs-red: var(--obj2);
+  --mafs-green: var(--obj3);
+  --mafs-violet: var(--obj4);
+  --mafs-orange: var(--obj5);
+}
+
+.obj1 { color: var(--obj1); }
+.obj2 { color: var(--obj2); }
+.obj3 { color: var(--obj3); }
+.obj4 { color: var(--obj4); }
+.obj5 { color: var(--obj5); }
+.obj6 { color: var(--obj6); }
+.objm { color: var(--obj-muted); }
+.hl { background: var(--warn-soft); border-radius: 3px; }
