@@ -8,7 +8,7 @@ import { Tex } from "../ui/Tex";
 import { Arrow, Dot, DraggablePoint, GeneralLine, Plane2D, type P2 } from "../viz2d";
 
 export default function B1() {
-  const [s, set, reset] = useUrlState({ P: [-2, -1], Q: [2, 2], abc: [3, -4, 2], src: "p", t: 0.5 });
+  const [s, set, reset] = useUrlState({ P: [-2, -1], Q: [2, 2], abc: [3, -4, 2], src: "p", t: 0.5 }, { src: ["p", "c"] });
   const P = s.P as P2, Q = s.Q as P2;
   const same = Math.hypot(Q[0] - P[0], Q[1] - P[1]) < 1e-9;
   const fromPts = lineFromPoints(P, Q);

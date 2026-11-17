@@ -8,7 +8,7 @@ import { Arrow, DraggablePoint, Fill, Plane2D, type P2 } from "../viz2d";
 type Mode = "soma" | "diferenca" | "combinacao";
 
 export default function A1() {
-  const [s, set, reset] = useUrlState({ u: [3, 1], v: [1, 2.5], a: 2, b: -1, modo: "soma" as Mode });
+  const [s, set, reset] = useUrlState({ u: [3, 1], v: [1, 2.5], a: 2, b: -1, modo: "soma" as Mode }, { modo: ["soma", "diferenca", "combinacao"] });
   const u = s.u as P2, v = s.v as P2;
   const mode = s.modo as Mode;
   const sum = add(u, v);

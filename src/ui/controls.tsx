@@ -365,7 +365,7 @@ export function LiveEquation({ general, current, label, wide = false, pin }: { g
   const id = useId();
   const eligible = pin ?? !wide;
   useLayoutEffect(() => {
-    store?.set(id, current, eligible);
+    store?.set(id, current, eligible, ref.current);
   }, [store, id, current, eligible]);
   useLayoutEffect(() => () => store?.remove(id), [store, id]);
   const pinnedId = useSyncExternalStore(store ? store.subscribe : noSubscribe, () => store?.get().id ?? null, () => null);

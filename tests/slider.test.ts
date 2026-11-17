@@ -34,4 +34,11 @@ describe("preenchimento do slider", () => {
     expect(stepValue(4.9, 1, 0.5, -5, 5)).toBe(5);
     expect(stepValue(-4.9, -1, 0.5, -5, 5)).toBe(-5);
   });
+
+  it("valor digitado fora do intervalo: o passo anda em direção ao intervalo e não pula para a ponta", () => {
+    expect(stepValue(100, -1, 0.5, 0, 10)).toBe(99.5);
+    expect(stepValue(100, 1, 0.5, 0, 10)).toBe(100);
+    expect(stepValue(-20, 1, 1, -5, 5)).toBe(-19);
+    expect(stepValue(-20, -1, 1, -5, 5)).toBe(-20);
+  });
 });

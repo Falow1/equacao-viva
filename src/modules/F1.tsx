@@ -16,9 +16,10 @@ export default function F1() {
     dim: "2",
     v1: [2, 1], v2: [-1, 1.5], w: [1, 3],
     a1: [2, 0, 1], a2: [0, 2, 1], a3: [1, 1, 2], w3: [2, 2, 2], k: 2,
-  });
+  }, { dim: ["2", "3"] });
   const is3 = s.dim === "3";
-  const vs: number[][] = is3 ? [s.a1, s.a2, s.a3].slice(0, s.k) : [s.v1, s.v2];
+  const k = s.k === 3 ? 3 : 2; // quantos vetores no espaço (um link com outro número volta para 2)
+  const vs: number[][] = is3 ? [s.a1, s.a2, s.a3].slice(0, k) : [s.v1, s.v2];
   const w = (is3 ? s.w3 : s.w) as number[];
   const dim = is3 ? 3 : 2;
   const aug = Array.from({ length: dim }, (_, i) => [...vs.map((v) => v[i]), w[i]]);
@@ -126,8 +127,8 @@ export default function F1() {
             <>
               <Segmented
                 label="Quantos vetores"
-                value={String(s.k) as "2" | "3"}
-                onChange={(k) => set({ k: Number(k) })}
+                value={String(k) as "2" | "3"}
+                onChange={(v) => set({ k: Number(v) })}
                 options={[
                   { value: "2", label: "Dois vetores" },
                   { value: "3", label: "Três vetores" },
@@ -135,7 +136,7 @@ export default function F1() {
               />
               <VecInput label={o1("\\vec v_1")} value={s.a1} onChange={(x) => set({ a1: x })} />
               <VecInput label={o2("\\vec v_2")} value={s.a2} onChange={(x) => set({ a2: x })} />
-              {s.k === 3 && <VecInput label={o5("\\vec v_3")} value={s.a3} onChange={(x) => set({ a3: x })} />}
+              {k === 3 && <VecInput label={o5("\\vec v_3")} value={s.a3} onChange={(x) => set({ a3: x })} />}
               <VecInput label={o3("\\vec w")} value={s.w3} onChange={(x) => set({ w3: x })} />
             </>
           ) : (

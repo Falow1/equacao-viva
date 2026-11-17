@@ -8,7 +8,8 @@ import { DraggablePoint, Plane2D, Plot, Segment, type P2 } from "../viz2d";
 export default function H5() {
   const [s, set, reset] = useUrlState({ pts: [[-3, -1.5], [-1.5, -1], [0, 0.5], [1, 1], [2.5, 1.5], [3.5, 3]], grau: 1 });
   const pts = s.pts as P2[];
-  const fit = leastSquares(pts, s.grau);
+  const grau = s.grau === 2 ? 2 : 1; // reta ou parábola (um link com outro grau volta para a reta)
+  const fit = leastSquares(pts, grau);
   const f = (x: number) => (fit ? fit.coeffs.reduce((acc, c, k) => acc + c * x ** k, 0) : NaN);
   const polyHigh = fit ? [...fit.coeffs].reverse() : [];
   const move = (i: number, p: P2) => set({ pts: pts.map((q, j) => (j === i ? p : q)) });
@@ -34,7 +35,7 @@ export default function H5() {
   );
 
   const n = pts.length;
-  const needed = s.grau + 1;
+  const needed = grau + 1;
 
   return (
     <ModuleLayout
@@ -57,10 +58,10 @@ export default function H5() {
         <LiveEquation general="A^{T}A\,\hat{x} = A^{T}\vec b" current={fit ? `${texMatrix(fit.AtA, { maxDen: 4, digits: 2 })}\\hat x = ${texMatrix(fit.Atb.map((x) => [x]), { maxDen: 4, digits: 2 })}` : "\\text{faltam pontos}"} />
         {fit && <LiveEquation label="Curva ajustada" current={o1(`y = ${texPoly(polyHigh, "x", { maxDen: 0, digits: 3 })}`)} />}
       </Block>
-      {!fit && <Note kind="warn">São necessários pelo menos {needed} pontos com abscissas diferentes para ajustar {s.grau === 1 ? "uma reta" : "uma parábola"}.</Note>}
+      {!fit && <Note kind="warn">São necessários pelo menos {needed} pontos com abscissas diferentes para ajustar {grau === 1 ? "uma reta" : "uma parábola"}.</Note>}
       <Block title="Controles">
         <div className="controls">
-          <Segmented label="Modelo" value={String(s.grau)} onChange={(g) => set({ grau: Number(g) })} options={[{ value: "1", label: "Reta" }, { value: "2", label: "Parábola" }]} />
+          <Segmented label="Modelo" value={String(grau)} onChange={(g) => set({ grau: Number(g) })} options={[{ value: "1", label: "Reta" }, { value: "2", label: "Parábola" }]} />
           <div className="row">
             <button type="button" className="btn small" onClick={() => set({ pts: pts.slice(0, -1) })} disabled={n === 0}>Remover último ponto</button>
             <button type="button" className="btn small" onClick={() => set({ pts: [] })} disabled={n === 0}>Limpar pontos</button>

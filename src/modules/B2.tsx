@@ -8,7 +8,7 @@ import { AngleArc, Dot, DraggablePoint, GeneralLine, Plane2D, RightAngle, Segmen
 const eq = (l: Line2) => `${texLinear([l.a, l.b], ["x", "y"], l.c)} = 0`;
 
 export default function B2() {
-  const [s, set, reset] = useUrlState({ A1: [-4, -2], B1: [3, 2], A2: [-3, 3], B2: [3, -1.5], P: [2, 3.5], alvo: "r" });
+  const [s, set, reset] = useUrlState({ A1: [-4, -2], B1: [3, 2], A2: [-3, 3], B2: [3, -1.5], P: [2, 3.5], alvo: "r" }, { alvo: ["r", "s"] });
   const r = lineFromPoints(s.A1 as P2, s.B1 as P2);
   const t = lineFromPoints(s.A2 as P2, s.B2 as P2);
   const P = s.P as P2;

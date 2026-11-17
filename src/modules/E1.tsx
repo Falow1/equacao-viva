@@ -13,7 +13,7 @@ const DEF2 = [[1, 1, 3], [1, -1, 1]];
 const DEF3 = [[1, 1, 1, 6], [1, -1, 2, 5], [2, 1, -1, 1]];
 
 export default function E1() {
-  const [s, set, reset] = useUrlState({ dim: "2", m2: DEF2, m3: DEF3 });
+  const [s, set, reset] = useUrlState({ dim: "2", m2: DEF2, m3: DEF3 }, { dim: ["2", "3"] });
   const is3 = s.dim === "3";
   const aug = (is3 ? s.m3 : s.m2) as number[][];
   const n = is3 ? 3 : 2;

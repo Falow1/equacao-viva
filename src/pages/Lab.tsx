@@ -171,7 +171,7 @@ function parseP(s: string): Scope {
 
 export default function Lab() {
   useTitle("Laboratório");
-  const [s, set] = useUrlState({ d: "2", e2: DEF2, e3: DEF3, p: "", h: [] as number[], t0: 0, t1: 6.283 });
+  const [s, set] = useUrlState({ d: "2", e2: DEF2, e3: DEF3, p: "", h: [] as number[], t0: 0, t1: 6.283 }, { d: ["2", "3"] });
   const dim = (s.d === "3" ? 3 : 2) as 2 | 3;
   const text = dim === 2 ? s.e2 : s.e3;
   const lines = text.split("\n");
@@ -189,14 +189,23 @@ export default function Lab() {
   const labRef = useRef<HTMLDivElement>(null);
   const split = useGraphSplit(labRef);
 
-  const setLines = (ls: string[]) => set(dim === 2 ? { e2: ls.join("\n") } : { e3: ls.join("\n") });
+  /**
+   * Troca a lista de linhas. Quando linhas entram ou saem, `move` diz para onde foi cada posição antiga
+   * (null = removida), para as expressões escondidas continuarem as mesmas.
+   */
+  const setLines = (ls: string[], move?: (i: number) => number | null) => {
+    const h = move ? { h: (s.h as number[]).map(move).filter((x): x is number => x !== null) } : {};
+    set(dim === 2 ? { e2: ls.join("\n"), ...h } : { e3: ls.join("\n"), ...h });
+  };
+  const insertedAt = (j: number) => (i: number) => (i >= j ? i + 1 : i);
+  const removedAt = (j: number) => (i: number) => (i === j ? null : i > j ? i - 1 : i);
   const setParam = (k: string, v: number) => set({ p: Object.entries({ ...pvals, [k]: v }).map(([a, b]) => `${a}:${Math.round(b * 1000) / 1000}`).join(",") });
   const focus = (i: number) => window.setTimeout(() => inputs.current[i]?.focus(), 0);
   const anyParam = items.some((it) => it.kind === "parametrica");
   const empty = lines.every((l) => l.trim() === "");
   const addExample = (ex: string) => {
-    const filled = lines.filter((l) => l.trim() !== "");
-    setLines([...filled, ex]);
+    const kept = lines.map((l, i) => (l.trim() !== "" ? i : -1)).filter((i) => i >= 0);
+    setLines([...kept.map((i) => lines[i]), ex], (i) => (kept.includes(i) ? kept.indexOf(i) : null));
   };
 
   const ev = (f: CompiledExpr, extra: Scope = {}) => f.fn({ ...scope, ...extra });
@@ -299,11 +308,11 @@ export default function Lab() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      setLines([...lines.slice(0, i + 1), "", ...lines.slice(i + 1)]);
+                      setLines([...lines.slice(0, i + 1), "", ...lines.slice(i + 1)], insertedAt(i + 1));
                       focus(i + 1);
                     } else if (e.key === "Backspace" && line === "" && lines.length > 1) {
                       e.preventDefault();
-                      setLines(lines.filter((_, j) => j !== i));
+                      setLines(lines.filter((_, j) => j !== i), removedAt(i));
                       focus(Math.max(0, i - 1));
                     }
                   }}
@@ -318,7 +327,7 @@ export default function Lab() {
                   </div>
                 ) : null}
               </div>
-              <button type="button" className="icon-btn small ghost" aria-label={`Remover expressão ${i + 1}`} title="Remover" onClick={() => setLines(lines.length > 1 ? lines.filter((_, j) => j !== i) : [""])}>
+              <button type="button" className="icon-btn small ghost" aria-label={`Remover expressão ${i + 1}`} title="Remover" onClick={() => (lines.length > 1 ? setLines(lines.filter((_, j) => j !== i), removedAt(i)) : setLines([""], () => null))}>
                 <Icon name="close" size={16} />
               </button>
             </div>

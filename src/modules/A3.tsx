@@ -9,7 +9,7 @@ import { Tex } from "../ui/Tex";
 import { Arrow3D, Parallelepiped, Poly3D, Scene3D, type V3 } from "../viz3d";
 
 export default function A3() {
-  const [s, set, reset] = useUrlState({ u: [2, 0, 0], v: [1, 2, 0], w: [0.5, 0.5, 2], mode: "vet" });
+  const [s, set, reset] = useUrlState({ u: [2, 0, 0], v: [1, 2, 0], w: [0.5, 0.5, 2], mode: "vet" }, { mode: ["vet", "misto"] });
   const u = s.u as V3, v = s.v as V3, w = s.w as V3;
   const mixedMode = s.mode === "misto";
   const n = cross(u, v) as V3;

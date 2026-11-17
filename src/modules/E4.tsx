@@ -63,7 +63,7 @@ const DEF = {
 };
 
 export default function E4() {
-  const [s, set, reset] = useUrlState(DEF);
+  const [s, set, reset] = useUrlState(DEF, { n: ["2", "3"], op: OPS.map((o) => o.value) });
   const n = s.n === "3" ? 3 : 2;
   const op = s.op as Op;
   const A = (n === 2 ? s.A2 : s.A3) as number[][];

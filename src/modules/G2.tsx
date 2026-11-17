@@ -11,7 +11,7 @@ type Mode = "AB" | "BA" | "inv";
 const eq = (X: number[][], Y: number[][]) => X.every((r, i) => r.every((x, j) => Math.abs(x - Y[i][j]) < 1e-9));
 
 export default function G2() {
-  const [st, set, reset] = useUrlState({ A: [[0, -1], [1, 0]], B: [[1, 1], [0, 1]], modo: "AB" as Mode });
+  const [st, set, reset] = useUrlState({ A: [[0, -1], [1, 0]], B: [[1, 1], [0, 1]], modo: "AB" as Mode }, { modo: ["AB", "BA", "inv"] });
   const A = st.A as number[][], B = st.B as number[][];
   const mode = st.modo as Mode;
   const [e, setE, run] = useTween(2);

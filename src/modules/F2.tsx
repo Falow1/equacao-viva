@@ -19,7 +19,9 @@ const sc3 = (a: number[], k: number): V3 => [a[0] * k, a[1] * k, a[2] * k];
 const COLS = ["obj1", "obj2", "obj5", "obj6"];
 
 export default function F2() {
-  const [s, set, reset] = useUrlState(DEF);
+  const [raw, set, reset] = useUrlState(DEF, { mode: ["eq", "ger"] });
+  // quantos vetores geram W: de 2 a 4 (um link com outro número volta para o padrão)
+  const s = [2, 3, 4].includes(raw.q) ? raw : { ...raw, q: DEF.q };
   const mode = s.mode as "eq" | "ger";
 
   return (

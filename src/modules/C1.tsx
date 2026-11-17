@@ -1,5 +1,5 @@
 import { cl, o1, o2, o3, tex, texDec, texLinear, texRootApprox, texTuple } from "../math/format";
-import { useUrlState } from "../state/useUrlState";
+import { positive, useUrlState } from "../state/useUrlState";
 import { Block, LiveEquation, Note, Presets, ResultRow, Results, Slider, VecInput } from "../ui/controls";
 import { ModuleLayout } from "../ui/ModuleLayout";
 import { Dot, DraggablePoint, Plane2D, Plot, Segment, type P2 } from "../viz2d";
@@ -9,7 +9,7 @@ const sqTerm = (v: string, c: number) => (Math.abs(c) < 1e-12 ? `${v}^2` : `(${v
 export default function C1() {
   const [s, set, reset] = useUrlState({ C: [0, 0], a: 4, b: 2.5, t: 1 });
   const [h, k] = s.C as P2;
-  const { a, b } = s;
+  const a = positive(s.a, 0.5), b = positive(s.b, 0.5);
   const circle = Math.abs(a - b) < 1e-9;
   const horiz = a >= b;
   const big = Math.max(a, b), small = Math.min(a, b);

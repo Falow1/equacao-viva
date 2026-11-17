@@ -1,5 +1,6 @@
 import { useRef, useState, type HTMLAttributes, type KeyboardEvent, type PointerEvent, type RefObject } from "react";
-import { useKeyboardOpen } from "./viewport";
+import { LANDSCAPE } from "./media";
+import { useFocusedField } from "./viewport";
 
 /** Alturas do gráfico no celular em pé, em % da área abaixo do cabeçalho. */
 const SNAPS = { pequeno: 30, medio: 48, grande: 76 } as const;
@@ -25,7 +26,9 @@ function readSnap(): Snap {
 export function useGraphSplit(container: RefObject<HTMLElement | null>) {
   const [snap, setSnapState] = useState<Snap>(readSnap);
   const [dragPct, setDragPct] = useState<number | null>(null);
-  const kb = useKeyboardOpen();
+  // Só encolhe para campos desta tela (painel ou lista); a busca do cabeçalho abre por cima e não precisa.
+  const field = useFocusedField();
+  const kb = !!field && !!container.current?.contains(field);
   const start = useRef<{ y: number; pct: number; cur: number; moved: boolean; id: number } | null>(null);
   const pct = dragPct ?? (kb ? SNAPS.pequeno : SNAPS[snap]);
 
@@ -52,7 +55,8 @@ export function useGraphSplit(container: RefObject<HTMLElement | null>) {
 
   const barProps: HTMLAttributes<HTMLDivElement> = {
     onPointerDown: (e: PointerEvent<HTMLDivElement>) => {
-      if (e.button !== 0) return;
+      // Deitado não há alça (o gráfico fica ao lado); um toque na fórmula não deve mudar a altura guardada.
+      if (e.button !== 0 || window.matchMedia(LANDSCAPE).matches) return;
       start.current = { y: e.clientY, pct, cur: pct, moved: false, id: e.pointerId };
       // com o dedo o navegador já captura sozinho; com o mouse, sem isso o arraste rápido escapa da barra
       try {

@@ -50,11 +50,16 @@ const VIEWS: Record<View, V3> = {
 
 function ViewController({ view, nonce, R }: { view: View; nonce: number; R: number }) {
   const { camera, controls, size, invalidate } = useThree();
-  useEffect(() => {
-    // distância que enquadra uma esfera de raio ~1,4R no menor dos dois campos de visão
+  /** Distância que enquadra uma esfera de raio ~1,4R no menor dos dois campos de visão. */
+  const fitDist = (w: number, h: number) => {
     const vfov = ((camera as THREE.PerspectiveCamera).fov * Math.PI) / 180;
-    const hfov = 2 * Math.atan(Math.tan(vfov / 2) * (size.width / Math.max(1, size.height)));
-    const dist = (R * 1.4) / Math.sin(Math.min(vfov, hfov) / 2);
+    const hfov = 2 * Math.atan(Math.tan(vfov / 2) * (w / Math.max(1, h)));
+    return (R * 1.4) / Math.sin(Math.min(vfov, hfov) / 2);
+  };
+  const lastFit = useRef<number | null>(null);
+  useEffect(() => {
+    const dist = fitDist(size.width, size.height);
+    lastFit.current = dist;
     const p = VIEWS[view];
     const n = Math.hypot(...p);
     camera.position.set((p[0] / n) * dist, (p[1] / n) * dist, (p[2] / n) * dist);
@@ -68,6 +73,21 @@ function ViewController({ view, nonce, R }: { view: View; nonce: number; R: numb
     invalidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, nonce, camera, controls, R, size.width > 0]);
+  // O gráfico mudou de tamanho (alça do celular, janela, girar o aparelho): mantém o ângulo e o zoom escolhidos
+  // e só ajusta a distância na mesma proporção do novo enquadramento, para a cena não ficar cortada.
+  useEffect(() => {
+    if (size.width <= 0 || size.height <= 0) return;
+    const d = fitDist(size.width, size.height);
+    const prev = lastFit.current;
+    lastFit.current = d;
+    if (prev === null || Math.abs(d / prev - 1) < 0.01) return;
+    const c = controls as unknown as OrbitControlsImpl | null;
+    const target = c ? c.target : new THREE.Vector3();
+    camera.position.sub(target).multiplyScalar(d / prev).add(target);
+    c?.update();
+    invalidate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size.width, size.height]);
   return null;
 }
 

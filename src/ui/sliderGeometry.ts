@@ -20,8 +20,13 @@ export function sliderGeometry(value: number, min: number, max: number) {
   };
 }
 
-/** Soma um passo, prende no intervalo e limpa o erro de ponto flutuante (0,1 + 0,2). */
+/**
+ * Soma um passo, prende no intervalo e limpa o erro de ponto flutuante (0,1 + 0,2).
+ * Um valor digitado fora do intervalo (o campo aceita) não é puxado de volta de uma vez:
+ * o passo nunca o leva mais para fora, mas anda normalmente em direção ao intervalo.
+ */
 export function stepValue(value: number, dir: 1 | -1, step: number, min: number, max: number): number {
-  const v = (Number.isFinite(value) ? value : 0) + dir * step;
-  return Math.round(Math.min(max, Math.max(min, v)) * 1e6) / 1e6;
+  const v0 = Number.isFinite(value) ? value : 0;
+  const lo = Math.min(min, v0), hi = Math.max(max, v0);
+  return Math.round(Math.min(hi, Math.max(lo, v0 + dir * step)) * 1e6) / 1e6;
 }

@@ -3,7 +3,7 @@ import { classifyConic, conicF } from "../math/conics";
 import { fmt, o3, texLinear } from "../math/format";
 import { marchingSquares } from "../math/implicit2d";
 import { QUADRICS, quadricF, quadricTrace, type QuadricId } from "../math/quadrics";
-import { useUrlState } from "../state/useUrlState";
+import { positive, useUrlState } from "../state/useUrlState";
 import { Block, LiveEquation, Note, ResultRow, Results, Segmented, Slider } from "../ui/controls";
 import { ModuleLayout } from "../ui/ModuleLayout";
 import { ImplicitCurve, Plane2D } from "../viz2d";
@@ -13,11 +13,15 @@ type Axis = "x" | "y" | "z";
 const R = 4;
 
 export default function D1() {
-  const [s, set, reset] = useUrlState({ q: "elipsoide", a: 3, b: 2, c: 1.5, axis: "z", k: 0.5, cut: true as boolean });
+  const [s, set, reset] = useUrlState(
+    { q: "elipsoide", a: 3, b: 2, c: 1.5, axis: "z", k: 0.5, cut: true as boolean },
+    { q: QUADRICS.map((d) => d.id), axis: ["x", "y", "z"] },
+  );
   const def = QUADRICS.find((d) => d.id === (s.q as QuadricId)) ?? QUADRICS[0];
+  const qa = positive(s.a, 0.5), qb = positive(s.b, 0.5), qc = positive(s.c, 0.5);
   const axis = s.axis as Axis;
-  const coeffs = def.coeffs(s.a, s.b, s.c);
-  const F = useMemo(() => quadricF(coeffs), [def.id, s.a, s.b, s.c]); // eslint-disable-line react-hooks/exhaustive-deps
+  const coeffs = def.coeffs(qa, qb, qc);
+  const F = useMemo(() => quadricF(coeffs), [def.id, qa, qb, qc]); // eslint-disable-line react-hooks/exhaustive-deps
   const trace = quadricTrace(coeffs, axis, s.k);
   const info = classifyConic(trace.conic);
   const F2 = conicF(trace.conic);
@@ -36,7 +40,7 @@ export default function D1() {
       pts.push(p);
     }
     return pts;
-  }, [def.id, s.a, s.b, s.c, axis, s.k, s.cut]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [def.id, qa, qb, qc, axis, s.k, s.cut]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const n: V3 = axis === "x" ? [1, 0, 0] : axis === "y" ? [0, 1, 0] : [0, 0, 1];
   const [u, v] = trace.vars;
@@ -45,7 +49,7 @@ export default function D1() {
 
   const graph = (
     <Scene3D R={R} label={`${def.name} com plano de corte ${axis} = k`}>
-      <ImplicitSurface F={F} R={R} res={44} color="obj1" opacity={1} deps={[def.id, s.a, s.b, s.c, s.cut]} />
+      <ImplicitSurface F={F} R={R} res={44} color="obj1" opacity={1} deps={[def.id, qa, qb, qc, s.cut]} />
       {s.cut && <PlaneMesh plane={{ n, d: s.k }} color="obj5" opacity={0.16} R={R} />}
       {s.cut && <Segments3D points={traceSegs} color="obj3" width={3.5} onTop />}
     </Scene3D>
@@ -81,15 +85,15 @@ export default function D1() {
           ))}
         </select>
         <div className="mt-10">
-          <LiveEquation current={def.equation(s.a, s.b, s.c)} />
+          <LiveEquation current={def.equation(qa, qb, qc)} />
         </div>
         <Note>{def.note}</Note>
       </Block>
       <Block title="Parâmetros">
         <div className="controls">
-          {def.uses.includes("a") && <Slider tex="a" value={s.a} onChange={(x) => set({ a: x })} min={0.5} max={4} step={0.1} />}
-          {def.uses.includes("b") && <Slider tex="b" value={s.b} onChange={(x) => set({ b: x })} min={0.5} max={4} step={0.1} />}
-          {def.uses.includes("c") && <Slider tex="c" value={s.c} onChange={(x) => set({ c: x })} min={0.5} max={4} step={0.1} />}
+          {def.uses.includes("a") && <Slider tex="a" value={qa} onChange={(x) => set({ a: x })} min={0.5} max={4} step={0.1} />}
+          {def.uses.includes("b") && <Slider tex="b" value={qb} onChange={(x) => set({ b: x })} min={0.5} max={4} step={0.1} />}
+          {def.uses.includes("c") && <Slider tex="c" value={qc} onChange={(x) => set({ c: x })} min={0.5} max={4} step={0.1} />}
         </div>
       </Block>
       <Block title="Plano de corte">

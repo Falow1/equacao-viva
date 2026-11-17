@@ -11,7 +11,7 @@ const DEF2 = [[3, 1], [1, 2]];
 const DEF3 = [[2, 0, 0.5], [0, 2, 0.5], [0, 0, 1.5]];
 
 export default function E3() {
-  const [s, set, reset] = useUrlState({ dim: "2", A2: DEF2, A3: DEF3 });
+  const [s, set, reset] = useUrlState({ dim: "2", A2: DEF2, A3: DEF3 }, { dim: ["2", "3"] });
   const is3 = s.dim === "3";
   const A2 = s.A2 as number[][];
   const A3 = s.A3 as number[][];

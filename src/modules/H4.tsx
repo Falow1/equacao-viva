@@ -25,7 +25,7 @@ const wName = (i: number) => `\\vec w_${i + 1}`;
 const cls = (c: string, t: string) => `\\htmlClass{${c}}{${t}}`;
 
 export default function H4() {
-  const [s, set, reset] = useUrlState({ dim: "2", a1: [3, 1], a2: [2, 2.5], b1: [2, 0, 1], b2: [1, 2, 0], b3: [1, 1, 2] });
+  const [s, set, reset] = useUrlState({ dim: "2", a1: [3, 1], a2: [2, 2.5], b1: [2, 0, 1], b2: [1, 2, 0], b3: [1, 1, 2] }, { dim: ["2", "3"] });
   const is3 = s.dim === "3";
   const vs: Vec[] = is3 ? [s.b1, s.b2, s.b3] : [s.a1, s.a2];
   const k = vs.length;

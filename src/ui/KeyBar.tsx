@@ -2,7 +2,7 @@ import type { MouseEvent, PointerEvent } from "react";
 import { useFocusedField, type Field } from "./viewport";
 
 /** Teclas para expressões do Laboratório (inseridas na posição do cursor). */
-const EXPR_KEYS = ["^", "(", ")", "*", "/", "sqrt(", "pi", "sin(", "cos(", "x", "y", "t", "="];
+const EXPR_KEYS = ["^", "(", ")", "*", "/", "sqrt(", "pi", "sin(", "cos(", "x", "y", "z", "t", "="];
 
 const setNative = (el: Field, v: string) => {
   const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;

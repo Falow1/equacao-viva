@@ -39,7 +39,7 @@ const lineTex = (l: Line3) => `X = ${texTuple(l.p)} + t\\,${texTuple(l.v)}`;
 const planeTex = (p: Plane) => texEquation(p.n, ["x", "y", "z"], p.d);
 
 export default function B5() {
-  const [s, set, reset] = useUrlState(DEF);
+  const [s, set, reset] = useUrlState(DEF, { sc: SCEN.map((o) => o.value) });
   const sc = s.sc as Sc;
   const r: Line3 = { p: s.rA as Vec3, v: s.rv as Vec3 };
   const l2: Line3 = { p: s.sA as Vec3, v: s.sv as Vec3 };

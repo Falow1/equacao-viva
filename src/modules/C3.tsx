@@ -1,5 +1,5 @@
 import { cl, o1, o2, o3, tex, texDec, texLinear, texTuple } from "../math/format";
-import { useUrlState } from "../state/useUrlState";
+import { positive, useUrlState } from "../state/useUrlState";
 import { Block, LiveEquation, Presets, ResultRow, Results, Segmented, Slider, VecInput } from "../ui/controls";
 import { ModuleLayout } from "../ui/ModuleLayout";
 import { Dot, DraggablePoint, InfLine, Plane2D, Plot, Segment, type P2 } from "../viz2d";
@@ -8,9 +8,9 @@ type Ori = "cima" | "baixo" | "direita" | "esquerda";
 const term = (v: string, c: number) => (Math.abs(c) < 1e-12 ? v : `(${v} ${c < 0 ? "+" : "-"} ${tex(Math.abs(c))})`);
 
 export default function C3() {
-  const [s, set, reset] = useUrlState({ V: [0, -1], p: 1, ori: "cima" as Ori, t: 2 });
+  const [s, set, reset] = useUrlState({ V: [0, -1], p: 1, ori: "cima" as Ori, t: 2 }, { ori: ["cima", "baixo", "direita", "esquerda"] });
   const [h, k] = s.V as P2;
-  const p = s.p;
+  const p = positive(s.p, 0.25);
   const ori = s.ori as Ori;
   const vertical = ori === "cima" || ori === "baixo";
   const sg = ori === "cima" || ori === "direita" ? 1 : -1;

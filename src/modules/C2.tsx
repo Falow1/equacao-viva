@@ -1,5 +1,5 @@
 import { cl, o1, o2, o3, tex, texDec, texLinear, texRootApprox, texTuple } from "../math/format";
-import { useUrlState } from "../state/useUrlState";
+import { positive, useUrlState } from "../state/useUrlState";
 import { Block, LiveEquation, Presets, ResultRow, Results, Segmented, Slider, VecInput } from "../ui/controls";
 import { ModuleLayout } from "../ui/ModuleLayout";
 import { Dot, DraggablePoint, InfLine, Plane2D, Plot, Segment, type P2 } from "../viz2d";
@@ -7,9 +7,9 @@ import { Dot, DraggablePoint, InfLine, Plane2D, Plot, Segment, type P2 } from ".
 const sqTerm = (v: string, c: number) => (Math.abs(c) < 1e-12 ? `${v}^2` : `(${v} ${c < 0 ? "+" : "-"} ${tex(Math.abs(c))})^2`);
 
 export default function C2() {
-  const [s, set, reset] = useUrlState({ C: [0, 0], a: 2, b: 1.5, eixo: "h", s: 0.8, ramo: 1 });
+  const [s, set, reset] = useUrlState({ C: [0, 0], a: 2, b: 1.5, eixo: "h", s: 0.8, ramo: 1 }, { eixo: ["h", "v"] });
   const [h, k] = s.C as P2;
-  const { a, b } = s;
+  const a = positive(s.a, 0.5), b = positive(s.b, 0.5);
   const horiz = s.eixo === "h";
   const c = Math.sqrt(a * a + b * b);
   const e = c / a;
@@ -18,7 +18,7 @@ export default function C2() {
     horiz ? [h + br * a * Math.cosh(t), k + b * Math.sinh(t)] : [h + b * Math.sinh(t), k + br * a * Math.cosh(t)];
   const F1: P2 = horiz ? [h + c, k] : [h, k + c];
   const F2: P2 = horiz ? [h - c, k] : [h, k - c];
-  const P = at(s.ramo, s.s);
+  const P = at(s.ramo < 0 ? -1 : 1, s.s);
   const d1 = Math.hypot(P[0] - F1[0], P[1] - F1[1]);
   const d2 = Math.hypot(P[0] - F2[0], P[1] - F2[1]);
   const slope = horiz ? b / a : a / b;

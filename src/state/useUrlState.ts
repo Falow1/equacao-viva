@@ -41,12 +41,31 @@ function parseLike(raw: string, def: UrlVal): UrlVal | undefined {
   return arr as number[];
 }
 
+/** Valores aceitos para os parâmetros de texto (modos, abas, dimensão). */
+export type UrlChoices<T> = { [K in keyof T]?: readonly string[] };
+
+/** Lê um parâmetro de texto da URL só se ele estiver entre os valores aceitos. */
+export function parseParam(raw: string, def: UrlVal, choices?: readonly string[]): UrlVal | undefined {
+  if (typeof def === "string" && choices && !choices.includes(raw)) return undefined;
+  return parseLike(raw, def);
+}
+
+/**
+ * Parâmetro que só faz sentido positivo (semieixo, parâmetro da parábola): usa o valor absoluto,
+ * com um mínimo (o começo do slider), para que 0 ou um negativo digitado (ou vindo de um link)
+ * não gere divisão por zero nem uma equação com "x²/0" depois de arredondada.
+ */
+export const positive = (x: number, min: number) => (Number.isFinite(x) ? Math.max(min, Math.abs(x)) : Math.max(min, 1));
+
 /**
  * Estado do módulo sincronizado com a query do hash (#/m/slug?u=2,1).
- * Valores inválidos voltam ao padrão. Escreve na URL com debounce, sem poluir o histórico.
+ * Valores inválidos voltam ao padrão: números que não são números, vetores com tamanho errado e,
+ * se `choices` disser quais são os aceitos, textos fora da lista (um link editado à mão com ?modo=xyz).
+ * Escreve na URL com debounce, sem poluir o histórico.
  */
 export function useUrlState<T extends Record<string, UrlVal>>(
   defaults: T,
+  choices?: UrlChoices<T>,
 ): [T, (patch: Partial<T> | ((s: T) => Partial<T>)) => void, () => void] {
   const [params, setParams] = useSearchParams();
   const defaultsRef = useRef(defaults);
@@ -55,7 +74,7 @@ export function useUrlState<T extends Record<string, UrlVal>>(
     for (const k of Object.keys(defaults) as (keyof T)[]) {
       const raw = params.get(k as string);
       if (raw === null) continue;
-      const v = parseLike(raw, defaults[k]);
+      const v = parseParam(raw, defaults[k], choices?.[k]);
       if (v !== undefined) s[k] = v as T[keyof T];
     }
     return s;

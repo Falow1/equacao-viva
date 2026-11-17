@@ -23,7 +23,7 @@ export default function B4() {
     a: 1, b: 2, c: 2, d: 4,
     P0: [1, 1, 1], n: [1, 1, 2],
     A: [2, 0, 0], B: [0, 3, 0], C: [0, 0, 1.5],
-  });
+  }, { mode: ["geral", "normal", "pontos"] });
   const mode = s.mode as Mode;
   const A = s.A as V3, B = s.B as V3, C = s.C as V3;
 
