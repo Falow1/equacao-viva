@@ -86,14 +86,51 @@
 .lab-syntax summary { cursor: pointer; font-size: 14px; font-weight: 600; }
 .lab-syntax ul { margin: 8px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.7; }
 
+/* Celular em pé: gráfico (altura ajustável pela alça) em cima e a lista com rolagem própria embaixo. */
 @media (max-width: 999px) {
-  .lab { display: flex; flex-direction: column-reverse; height: auto; }
-  .lab-graph {
-    position: sticky;
-    top: var(--header-h);
-    z-index: 10;
-    height: 55dvh;
-    border-bottom: 1px solid var(--border);
+  .lab {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--graph-h, 48%) auto minmax(0, 1fr);
+    grid-template-areas:
+      "graph"
+      "eq"
+      "list";
+    height: calc(var(--vvh, 100dvh) - var(--header-h));
+    overflow: hidden;
+    transition: grid-template-rows 0.18s ease-out;
   }
-  .lab-list { border-right: 0; }
+  .lab[data-dragging] { transition: none; }
+  .lab-graph { grid-area: graph; }
+  .lab-list {
+    grid-area: list;
+    border-right: 0;
+    overscroll-behavior: contain;
+    padding-bottom: calc(24px + var(--safe-b));
+  }
+}
+/* Deitado: gráfico à esquerda, lista à direita, sem alça. */
+@media (max-width: 999px) and (max-height: 499px) {
+  .lab {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 46%);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "graph list";
+    transition: none;
+  }
+  .lab .eqbar { display: none; }
+  .lab-graph { border-right: 1px solid var(--border); }
+}
+
+@media (pointer: coarse) {
+  .lab-item input.expr { height: var(--tap); font-size: 16px; }
+  /* bolinha de cor: área de toque de 44px sem mudar o desenho */
+  .lab-item .swatch {
+    box-sizing: content-box;
+    padding: 15px;
+    margin: -5px -15px -15px;
+    background-clip: content-box;
+  }
+}
+
+@media (hover: hover) {
+  .lab-syntax summary:hover { color: var(--accent); }
 }

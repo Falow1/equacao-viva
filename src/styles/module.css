@@ -59,7 +59,9 @@
   border: 1.5px solid color-mix(in srgb, var(--tc, var(--accent)) 55%, var(--border-strong));
   transition: background 0.15s;
 }
-.dot:hover::after { background: color-mix(in srgb, var(--tc, var(--accent)) 40%, transparent); }
+@media (hover: hover) {
+  .dot:hover::after { background: color-mix(in srgb, var(--tc, var(--accent)) 40%, transparent); }
+}
 .dot.on::after { background: var(--tc, var(--accent)); border-color: var(--tc, var(--accent)); }
 .panel-actions {
   position: relative;
@@ -102,7 +104,9 @@
   font-size: 14px;
   cursor: pointer;
 }
-.module-tabs button:hover { color: var(--text); }
+@media (hover: hover) {
+  .module-tabs button:hover { color: var(--text); }
+}
 .module-tabs button[aria-selected="true"] {
   border-bottom-color: var(--tc, var(--accent));
   color: var(--text);
@@ -122,26 +126,110 @@
   line-height: 1.65;
 }
 .explain p { margin-bottom: 0.8em; }
+.explain-summary { display: none; }
 
+/* Barra entre o gráfico e o painel (só no celular): alça + equação viva atual */
+.eqbar { display: none; }
+
+/* ---------- Celular e tablet (largura < 1000px) ----------
+ * A página não rola: o módulo ocupa a altura visível (que encolhe com o teclado) e só o painel rola.
+ * Em pé: gráfico (altura ajustável pela alça), barra da equação, painel.
+ */
 @media (max-width: 999px) {
-  .module { display: block; height: auto; }
-  .module-graph {
-    position: sticky;
-    top: var(--header-h);
-    z-index: 10;
-    height: 55dvh;
-    border-right: 0;
-    border-bottom: 1px solid var(--border);
+  .module {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: var(--graph-h, 48%) auto minmax(0, 1fr);
+    grid-template-areas:
+      "graph"
+      "eq"
+      "panel";
+    height: calc(var(--vvh, 100dvh) - var(--header-h));
+    overflow: hidden;
+    transition: grid-template-rows 0.18s ease-out;
   }
-  .module-panel { display: block; overflow: visible; }
-  .panel-head { padding: 14px 16px 8px; }
+  .module[data-dragging] { transition: none; }
+  .module-graph { grid-area: graph; border-right: 0; }
+  .eqbar {
+    grid-area: eq;
+    display: block;
+    position: relative;
+    z-index: 4;
+    padding: 0 12px 4px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    cursor: row-resize;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: pan-x;
+  }
+  .eqbar-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+    border-radius: var(--radius-sm);
+  }
+  .eqbar-handle.alone { height: 26px; }
+  .eqbar-handle:focus-visible { outline-offset: -2px; }
+  .eqbar-handle span {
+    width: 36px;
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--border-strong);
+  }
+  .eqbar-eq {
+    overflow-x: auto;
+    overflow-y: hidden;
+    font-size: 14px;
+    text-align: center;
+    scrollbar-width: none;
+  }
+  .eqbar-eq .katex-display { margin: 0; padding: 0 0 2px; }
+  .module-panel {
+    grid-area: panel;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .panel-head { padding: 10px 16px 6px; }
+  .panel-head-row { margin-bottom: 2px; }
+  .panel-head h1 { font-size: 18px; margin-bottom: 0; }
+  .panel-head .summary { display: none; }
+  .explain-summary { display: block; color: var(--text-2); }
   .module-tabs {
     position: sticky;
-    top: calc(var(--header-h) + 55dvh);
-    z-index: 9;
+    top: 0;
+    z-index: 3;
     padding: 0 16px;
   }
-  .panel-body { overflow: visible; padding: 4px 16px 40px; }
+  .panel-body { overflow: visible; padding: 4px 16px calc(40px + var(--safe-b)); }
+  /* A linha "Agora" da equação fixada já está na barra: no painel fica só a forma geral. */
+  .equation.pinned .current { display: none; }
+  .equation.pinned .general { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+}
+
+/* Deitado: gráfico à esquerda com a altura inteira; à direita a barra da equação (sem alça) e o painel. */
+@media (max-width: 999px) and (max-height: 499px) {
+  .module {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 46%);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      "graph eq"
+      "graph panel";
+    transition: none;
+  }
+  .module-graph { border-right: 1px solid var(--border); }
+  .eqbar { padding-top: 4px; border-top: 0; cursor: default; touch-action: auto; }
+  .eqbar-handle { display: none; }
+  .panel-head h1 { font-size: 16px; }
+}
+
+@media (pointer: coarse) {
+  .dot { width: 26px; height: 32px; }
+  .module-tabs button { padding: 13px 14px 12px; }
+  /* área de toque de 44px sem mudar o desenho */
+  .crumb-track { padding: 12px 0; margin: -12px 0; }
 }
 
 /* Esqueleto enquanto o módulo carrega */
@@ -169,6 +257,50 @@
 .graph-overlay.tl { top: 10px; left: 10px; }
 .graph-overlay.bl { bottom: 10px; left: 10px; }
 .graph-overlay .btn { background: color-mix(in srgb, var(--surface) 92%, transparent); }
+.views-full { display: flex; flex-wrap: wrap; gap: 6px; }
+.views-compact { display: none; position: relative; }
+.view-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 8;
+  min-width: 170px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+.view-menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+.view-menu button[aria-checked="true"] { color: var(--accent); font-weight: 600; }
+.view-menu button:active { background: var(--surface-2); }
+.frame-btn .icon { display: none; }
+@media (max-width: 999px) {
+  .views-full { display: none; }
+  .views-compact { display: block; }
+  .frame-btn { justify-content: center; width: 40px; padding: 0; }
+  .frame-btn .icon { display: block; }
+  .frame-label { display: none; }
+}
+@media (pointer: coarse) {
+  .graph-overlay .btn.small { min-height: var(--tap); }
+  .frame-btn { width: var(--tap); }
+}
 .graph-legend {
   padding: 6px 10px;
   border: 1px solid var(--border);

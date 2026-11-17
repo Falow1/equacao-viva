@@ -1,28 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router";
 import { MODULES, TRACKS, modulesOfTrack, trackById } from "../modules/registry";
 import { Logo, SITE_NAME, trackColor } from "./brand";
 import { Icon } from "./icons";
+import { useDismiss } from "./useDismiss";
 import { currentTheme, saveTheme, type Theme } from "../theme";
-
-/** Fecha um painel ao clicar fora dele ou apertar Esc. */
-function useDismiss(open: boolean, close: () => void, ...refs: RefObject<HTMLElement | null>[]) {
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: PointerEvent) => {
-      if (refs.every((r) => !r.current || !r.current.contains(e.target as Node))) close();
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-    document.addEventListener("pointerdown", onDown);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onDown);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
-}
 
 function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(currentTheme);

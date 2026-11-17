@@ -8,6 +8,8 @@ import { TrackPage } from "./pages/TrackPage";
 import { Loading } from "./ui/Feedback";
 import { Footer } from "./ui/Footer";
 import { Header } from "./ui/Header";
+import { KeyBar } from "./ui/KeyBar";
+import { useViewportVars } from "./ui/viewport";
 
 const Lab = lazy(() => import("./pages/Lab"));
 
@@ -27,6 +29,7 @@ function FooterIfContent() {
 }
 
 export function App() {
+  useViewportVars();
   return (
     <>
       <ScrollTop />
@@ -47,6 +50,7 @@ export function App() {
         </Suspense>
       </main>
       <FooterIfContent />
+      <KeyBar />
     </>
   );
 }

@@ -5,6 +5,8 @@ import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { marchingTetra } from "../math/implicit3d";
 import { clipLine3, clipPlane, type Line3, type Plane } from "../math/space";
+import { Icon } from "../ui/icons";
+import { useDismiss } from "../ui/useDismiss";
 
 export type V3 = [number, number, number];
 
@@ -47,7 +49,7 @@ const VIEWS: Record<View, V3> = {
 };
 
 function ViewController({ view, nonce, R }: { view: View; nonce: number; R: number }) {
-  const { camera, controls, size } = useThree();
+  const { camera, controls, size, invalidate } = useThree();
   useEffect(() => {
     // distância que enquadra uma esfera de raio ~1,4R no menor dos dois campos de visão
     const vfov = ((camera as THREE.PerspectiveCamera).fov * Math.PI) / 180;
@@ -63,14 +65,59 @@ function ViewController({ view, nonce, R }: { view: View; nonce: number; R: numb
       c.target.set(0, 0, 0);
       c.update();
     }
+    invalidate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, nonce, camera, controls, R, size.width > 0]);
   return null;
 }
 
+const VIEW_LABEL: Record<View, string> = { iso: "Isométrica", topo: "Topo", frente: "Frente", lado: "Lado" };
+
+/** No celular, as quatro vistas viram um botão só que abre um menu. */
+function ViewMenu({ view, onPick }: { view: View; onPick: (v: View) => void }) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  useDismiss(open, () => setOpen(false), box);
+  return (
+    <div className="views-compact" ref={box}>
+      <button type="button" className="btn small" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <Icon name="cube" size={16} />
+        {VIEW_LABEL[view]}
+        <Icon name="chevronDown" size={14} />
+      </button>
+      {open && (
+        <div className="view-menu" role="menu" aria-label="Vista">
+          {(Object.keys(VIEW_LABEL) as View[]).map((v) => (
+            <button
+              key={v}
+              type="button"
+              role="menuitemradio"
+              aria-checked={view === v}
+              onClick={() => {
+                onPick(v);
+                setOpen(false);
+              }}
+            >
+              {VIEW_LABEL[v]}
+              {view === v && <Icon name="check" size={16} />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Celular com pouca memória: menos pixels por quadro no 3D. */
+const lowEndTouch = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(pointer: coarse)").matches &&
+  ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 8) <= 4;
+
 export function Scene3D({ children, R = 4, overlay, label = "Cena 3D interativa", grid = true, axes = true }: { children: ReactNode; R?: number; overlay?: ReactNode; label?: string; grid?: boolean; axes?: boolean }) {
   const [view, setView] = useState<View>("iso");
   const [nonce, setNonce] = useState(0);
+  const dpr = useMemo<[number, number]>(() => [1, lowEndTouch() ? 1.5 : 2], []);
   const dist = R * 3.3;
   const go = (v: View) => {
     setView(v);
@@ -80,9 +127,11 @@ export function Scene3D({ children, R = 4, overlay, label = "Cena 3D interativa"
   const n0 = Math.hypot(...init);
   return (
     <div style={{ position: "absolute", inset: 0 }} role="figure" aria-label={`${label}. Arraste para girar, use a roda para aproximar.`}>
+      {/* frameloop "demand": só redesenha quando algo muda (girar, arrastar, mudar um valor), poupando bateria */}
       <Canvas
         camera={{ position: [(init[0] / n0) * dist, (init[1] / n0) * dist, (init[2] / n0) * dist], up: [0, 0, 1], fov: 38, near: 0.1, far: 200 }}
-        dpr={[1, 2]}
+        dpr={dpr}
+        frameloop="demand"
         style={{ touchAction: "none" }}
       >
         <ambientLight intensity={0.9} />
@@ -95,11 +144,14 @@ export function Scene3D({ children, R = 4, overlay, label = "Cena 3D interativa"
         <ViewController view={view} nonce={nonce} R={R} />
       </Canvas>
       <div className="graph-overlay tr">
-        {(["iso", "topo", "frente", "lado"] as View[]).map((v) => (
-          <button key={v} type="button" className="btn small" aria-pressed={view === v} onClick={() => go(v)}>
-            {{ iso: "Isométrica", topo: "Topo", frente: "Frente", lado: "Lado" }[v]}
-          </button>
-        ))}
+        <div className="views-full">
+          {(Object.keys(VIEW_LABEL) as View[]).map((v) => (
+            <button key={v} type="button" className="btn small" aria-pressed={view === v} onClick={() => go(v)}>
+              {VIEW_LABEL[v]}
+            </button>
+          ))}
+        </div>
+        <ViewMenu view={view} onPick={go} />
       </div>
       {overlay}
     </div>
@@ -148,10 +200,12 @@ function Axes3D({ R }: { R: number }) {
 export function Label3D({ at, text, color = "text", size = 14, weight = 650, offset = [0, 0] }: { at: V3; text: string; color?: string; size?: number; weight?: number; offset?: [number, number] }) {
   // Rótulo em DOM puro, reposicionado a cada quadro (sem criar raízes React por rótulo).
   const c = useColor(color);
-  const { gl, camera, size: vp } = useThree();
+  const { gl, camera, size: vp, invalidate } = useThree();
   const el = useMemo(() => document.createElement("span"), []);
   const pos = useRef(at);
   pos.current = at;
+  // Com frameloop "demand", mover só o rótulo também precisa pedir um quadro novo.
+  useEffect(() => invalidate(), [at[0], at[1], at[2], invalidate]); // eslint-disable-line react-hooks/exhaustive-deps
   const tmp = useMemo(() => new THREE.Vector3(), []);
   useLayoutEffect(() => {
     gl.domElement.parentElement?.appendChild(el);

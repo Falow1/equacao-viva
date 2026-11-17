@@ -10,7 +10,6 @@
   color: var(--text);
 }
 a.card { transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; }
-a.card:hover,
 a.card:focus-visible {
   border-color: var(--tc, var(--accent));
   box-shadow: var(--shadow-sm);
@@ -74,9 +73,7 @@ a.card:focus-visible {
   cursor: pointer;
   text-decoration: none;
 }
-.btn:hover { background: var(--surface-2); text-decoration: none; }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.btn.primary:hover { filter: brightness(1.08); }
 .btn.small { min-height: 30px; padding: 3px 10px; font-size: 13px; }
 .btn.large { min-height: 44px; padding: 8px 18px; font-size: 15px; font-weight: 550; }
 .btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
@@ -96,10 +93,8 @@ a.card:focus-visible {
   color: var(--text);
   cursor: pointer;
 }
-.icon-btn:hover { background: var(--surface-2); }
 .icon-btn.small { width: 34px; height: 34px; }
 .icon-btn.ghost { border-color: transparent; background: transparent; color: var(--text-3); }
-.icon-btn.ghost:hover { background: var(--surface-2); color: var(--text); }
 .icon-btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 
 .pill,
@@ -116,11 +111,6 @@ a.card:focus-visible {
   font-size: 13px;
   cursor: pointer;
 }
-.pill:hover,
-.presets .btn:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-}
 .pill.mono { font-family: var(--font-mono); font-size: 12.5px; }
 .presets { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -128,23 +118,185 @@ a.card:focus-visible {
 .controls { display: grid; gap: 10px; }
 .control-row {
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr) 64px;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  grid-template-areas: "label slider num";
   align-items: center;
   gap: 10px;
 }
-.control-row label {
+.control-row > label {
+  grid-area: label;
   overflow: hidden;
   font-size: 14px;
   color: var(--text-2);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-input[type="range"] {
-  width: 100%;
-  height: 28px;
-  margin: 0;
-  accent-color: var(--accent);
+.control-row > .slider { grid-area: slider; }
+.slider-num {
+  grid-area: num;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
+.slider-num .num { width: 64px; }
+
+/* ---------- Slider ----------
+ * Um <input type="range"> de verdade (teclado e leitor de tela) por cima de um trilho desenhado.
+ * O centro da bolinha anda de th/2 até 100% − th/2; --from, --to, --pos e --zero usam essa mesma conta.
+ */
+.slider {
+  --th: 22px;
+  --h: 28px;
+  --sl: var(--accent);
+  position: relative;
+  min-width: 0;
+  height: var(--h);
+}
+.slider-track,
+.slider-fill,
+.slider-zero {
+  position: absolute;
+  top: 50%;
+  pointer-events: none;
+}
+.slider-track {
+  left: 0;
+  right: 0;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+}
+.slider-fill {
+  left: var(--from);
+  width: calc(var(--to) - var(--from));
+  height: 6px;
+  margin-top: -3px;
+  border-radius: var(--radius-pill);
+  background: var(--sl);
+}
+.slider-zero {
+  left: var(--zero);
+  width: 2px;
+  height: 12px;
+  margin: -6px 0 0 -1px;
+  border-radius: 1px;
+  background: var(--text-3);
+}
+.slider input {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.slider input:focus-visible { outline: none; }
+.slider input::-webkit-slider-runnable-track { height: var(--h); border: 0; background: transparent; }
+.slider input::-moz-range-track { height: var(--h); border: 0; background: transparent; }
+.slider input::-moz-range-progress { background: transparent; }
+.slider input::-webkit-slider-thumb {
+  box-sizing: border-box;
+  width: var(--th);
+  height: var(--th);
+  margin-top: calc((var(--h) - var(--th)) / 2);
+  border: 2px solid var(--sl);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  -webkit-appearance: none;
+  appearance: none;
+  transition: box-shadow 0.12s, transform 0.12s;
+}
+.slider input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--th);
+  height: var(--th);
+  border: 2px solid var(--sl);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.12s, transform 0.12s;
+}
+.slider input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--sl); }
+.slider input:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--sl); }
+.slider[data-dragging] input { cursor: grabbing; }
+.slider[data-dragging] input::-webkit-slider-thumb {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 9px color-mix(in srgb, var(--sl) 22%, transparent);
+}
+.slider[data-dragging] input::-moz-range-thumb {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 9px color-mix(in srgb, var(--sl) 22%, transparent);
+}
+.slider-bubble {
+  position: absolute;
+  z-index: 2;
+  left: var(--pos);
+  bottom: calc(50% + var(--th) / 2 + 6px);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--sl);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.12s, transform 0.12s;
+}
+.slider[data-dragging] .slider-bubble,
+.slider input:focus-visible ~ .slider-bubble {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Botões − e + (só no toque; segurar repete) */
+.step-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.step-btn:active { background: var(--surface-2); }
+@media (pointer: fine), (pointer: none) {
+  .step-btn { display: none; }
+}
+@media (pointer: coarse) {
+  .slider { --th: 28px; --h: 44px; }
+}
+/* Tela estreita: rótulo e valor em cima, slider com a largura inteira embaixo */
+@media (max-width: 479px) {
+  .control-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "label num"
+      "slider slider";
+    row-gap: 2px;
+  }
+}
+
 .num {
   width: 100%;
   height: 32px;
@@ -293,6 +445,12 @@ select.select {
 .result-row:last-child { border-bottom: 0; }
 .result-row .rl { color: var(--text-2); }
 .result-row .rv { overflow-x: auto; overflow-y: hidden; padding: 2px 0; font-variant-numeric: tabular-nums; }
+/* Celular: as mesmas colunas, mas um valor largo (produto de matrizes) desce para a linha de baixo e ganha a largura toda. */
+@media (max-width: 999px) {
+  .result-row { display: flex; flex-wrap: wrap; column-gap: 10px; row-gap: 2px; }
+  .result-row .rl { flex: 0 0 max(110px, calc(40% - 6px)); min-width: 0; }
+  .result-row .rv { flex: 1 1 auto; min-width: 0; max-width: 100%; }
+}
 
 /* Notas */
 .note {
@@ -338,7 +496,6 @@ select.select {
   color: var(--text);
   transition: border-color 0.15s;
 }
-.pager-card:hover,
 .pager-card:focus-visible {
   border-color: var(--tc, var(--accent));
   text-decoration: none;
@@ -363,3 +520,98 @@ select.select {
 /* KaTeX */
 .katex { font-size: 1.08em; }
 .katex-display { margin: 0.2em 0; padding: 2px 0; overflow-x: auto; overflow-y: hidden; }
+
+/* ---------- Passar o mouse (só onde existe mouse: no toque o efeito ficaria "grudado") ---------- */
+@media (hover: hover) {
+  a.card:hover {
+    border-color: var(--tc, var(--accent));
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--surface-2); text-decoration: none; }
+  .btn.primary:hover { background: var(--accent); filter: brightness(1.08); }
+  .icon-btn:hover { background: var(--surface-2); }
+  .icon-btn.ghost:hover { background: var(--surface-2); color: var(--text); }
+  .pill:hover,
+  .presets .btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .pager-card:hover {
+    border-color: var(--tc, var(--accent));
+    text-decoration: none;
+  }
+  .slider:hover input::-webkit-slider-thumb { box-shadow: var(--shadow-sm), 0 0 0 6px color-mix(in srgb, var(--sl) 18%, transparent); }
+  .slider:hover input::-moz-range-thumb { box-shadow: var(--shadow-sm), 0 0 0 6px color-mix(in srgb, var(--sl) 18%, transparent); }
+}
+
+/* Resposta ao toque */
+.btn:active,
+.icon-btn:active,
+.pill:active,
+.seg button:active { background: var(--surface-2); }
+.btn.primary:active { background: var(--accent); filter: brightness(0.94); }
+a.card:active,
+.pager-card:active { border-color: var(--tc, var(--accent)); }
+
+/* ---------- Barra de teclas acima do teclado do celular ---------- */
+.keybar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--kb-offset, 0px);
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px max(8px, var(--safe-r)) 6px max(8px, var(--safe-l));
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.keybar-keys {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.keybar-keys::-webkit-scrollbar { display: none; }
+.key {
+  flex: none;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  cursor: pointer;
+}
+.key.wide { padding: 0 14px; font-family: var(--font); font-size: 15px; }
+.key:active { background: var(--accent-soft); }
+.keybar > .key { border-color: var(--accent); background: var(--accent); color: var(--on-accent); font-weight: 600; }
+
+/* ---------- Tamanhos de toque ---------- */
+@media (pointer: coarse) {
+  .btn,
+  .seg button,
+  select.select { min-height: var(--tap); }
+  .btn.small { min-height: 40px; padding: 4px 12px; font-size: 14px; }
+  .icon-btn,
+  .icon-btn.small { width: var(--tap); height: var(--tap); }
+  .pill,
+  .presets .btn { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+  .pill.mono { font-size: 13.5px; }
+  .presets { gap: 8px; }
+  .num,
+  select.select { height: var(--tap); font-size: 16px; }
+  .vec-input .num { width: 68px; }
+  .matrix-input .num { width: 60px; }
+  /* caixas de seleção: etiqueta inteira clicável, com altura de toque */
+  label:has(> input[type="checkbox"]) { min-height: var(--tap); cursor: pointer; }
+  input[type="checkbox"] { width: 22px; height: 22px; margin: 0; accent-color: var(--accent); }
+}

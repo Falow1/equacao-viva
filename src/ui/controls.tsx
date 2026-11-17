@@ -1,5 +1,7 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useContext, useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { fmt } from "../math/format";
+import { EqPinContext } from "./eqPin";
+import { sliderGeometry, stepValue } from "./sliderGeometry";
 import { Tex } from "./Tex";
 
 /** Campo numérico que aceita vírgula ou ponto e só confirma valores válidos. */
@@ -73,7 +75,55 @@ export function NumberField({
   );
 }
 
-/** Slider com rótulo (texto ou LaTeX) e campo numérico ao lado. */
+const OBJ = /\bobj[1-6]\b/;
+const sliderPos = (f: number) => `calc(var(--th) / 2 + (100% - var(--th)) * ${f.toFixed(4)})`;
+
+/** Botão − ou + do slider: um passo por toque; segurando, repete (espera 400 ms, depois a cada 60 ms). */
+function StepButton({ dir, value, step, min, max, onChange, name }: { dir: 1 | -1; value: number; step: number; min: number; max: number; onChange: (v: number) => void; name: string }) {
+  const latest = useRef(value);
+  latest.current = value;
+  const timer = useRef(0);
+  const stop = () => {
+    window.clearTimeout(timer.current);
+    window.clearInterval(timer.current);
+  };
+  useEffect(() => stop, []);
+  const bump = () => {
+    latest.current = stepValue(latest.current, dir, step, min, max);
+    onChange(latest.current);
+  };
+  return (
+    <button
+      type="button"
+      className="step-btn"
+      aria-label={`${dir < 0 ? "Diminuir" : "Aumentar"} ${name}`}
+      onPointerDown={(e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        bump();
+        stop();
+        timer.current = window.setTimeout(() => {
+          timer.current = window.setInterval(bump, 60);
+        }, 400);
+      }}
+      onPointerUp={stop}
+      onPointerLeave={stop}
+      onPointerCancel={stop}
+      onClick={(e) => {
+        if (e.detail === 0) bump(); // teclado ou leitor de tela (o toque já agiu no pointerdown)
+      }}
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      {dir < 0 ? "−" : "+"}
+    </button>
+  );
+}
+
+/**
+ * Slider com rótulo (texto ou LaTeX) e campo numérico ao lado.
+ * A cor segue o objeto que o parâmetro controla (`color`, ou a classe objN do rótulo); senão, a cor de destaque.
+ * Se o intervalo cruza o zero, o preenchimento vai do zero até a bolinha e o zero ganha uma marca.
+ */
 export function Slider({
   label,
   tex,
@@ -83,6 +133,7 @@ export function Slider({
   max,
   step = 0.5,
   className,
+  color,
 }: {
   label?: ReactNode;
   tex?: string;
@@ -92,23 +143,64 @@ export function Slider({
   max: number;
   step?: number;
   className?: string;
+  /** "obj1" … "obj6" ou qualquer cor CSS */
+  color?: string;
 }) {
   const id = useId();
+  const [dragging, setDragging] = useState(false);
+  const g = sliderGeometry(value, min, max);
+  const objName = color ?? (tex ?? "").match(OBJ)?.[0] ?? className?.match(OBJ)?.[0];
+  const name = typeof label === "string" ? label : (tex ?? "valor").replace(/\\htmlClass\{[^}]*\}\{([^}]*)\}/g, "$1");
+
+  // O mouse pode soltar fora do slider: escuta a janela enquanto arrasta.
+  useEffect(() => {
+    if (!dragging) return;
+    const end = () => setDragging(false);
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+    return () => {
+      window.removeEventListener("pointerup", end);
+      window.removeEventListener("pointercancel", end);
+    };
+  }, [dragging]);
+
+  const style = {
+    ...(objName ? { "--sl": OBJ.test(objName) ? `var(--${objName})` : objName } : {}),
+    "--pos": sliderPos(g.p),
+    "--from": g.fromEdge ? "0px" : sliderPos(g.lo),
+    "--to": sliderPos(g.hi),
+    ...(g.z !== null ? { "--zero": sliderPos(g.z) } : {}),
+  } as CSSProperties;
+
   return (
     <div className="control-row">
       <label htmlFor={id} className={className}>
         {tex ? <Tex>{tex}</Tex> : label}
       </label>
-      <input
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-      <NumberField value={value} onChange={onChange} step={step} label={typeof label === "string" ? label : tex} />
+      <div className="slider" style={style} data-dragging={dragging ? "" : undefined}>
+        <span className="slider-track" />
+        <span className="slider-fill" />
+        {g.z !== null && <span className="slider-zero" />}
+        <input
+          id={id}
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          onPointerDown={() => setDragging(true)}
+          onBlur={() => setDragging(false)}
+        />
+        <output className="slider-bubble" htmlFor={id} aria-hidden="true">
+          {fmt(value)}
+        </output>
+      </div>
+      <div className="slider-num">
+        <StepButton dir={-1} value={value} step={step} min={min} max={max} onChange={onChange} name={name} />
+        <NumberField value={value} onChange={onChange} step={step} label={name} />
+        <StepButton dir={1} value={value} step={step} min={min} max={max} onChange={onChange} name={name} />
+      </div>
     </div>
   );
 }
@@ -239,7 +331,7 @@ export function Block({ title, children }: { title?: ReactNode; children: ReactN
  * Marca com `fade-r` as fórmulas que continuam além da borda direita (e ainda não foram roladas até o fim),
  * para o CSS desenhar um degradê indicando que há mais.
  */
-function useScrollFade(ref: RefObject<HTMLElement | null>) {
+export function useScrollFade(ref: RefObject<HTMLElement | null>) {
   const update = () => {
     ref.current?.querySelectorAll<HTMLElement>(".katex-display").forEach((d) => {
       d.classList.toggle("fade-r", d.scrollWidth - d.clientWidth - d.scrollLeft > 2);
@@ -259,12 +351,27 @@ function useScrollFade(ref: RefObject<HTMLElement | null>) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 }
 
-/** Equação viva: forma geral em cima e valores substituídos embaixo. `wide` reduz a fonte para fórmulas largas (matrizes 3×3). */
-export function LiveEquation({ general, current, label, wide = false }: { general?: string; current: string; label?: string; wide?: boolean }) {
+const noSubscribe = () => () => {};
+
+/**
+ * Equação viva: forma geral em cima e valores substituídos embaixo. `wide` reduz a fonte para fórmulas largas (matrizes 3×3).
+ * No celular, a primeira equação viva do módulo também aparece na barra entre o gráfico e o painel
+ * (`pin` escolhe outra ou desliga; fórmulas `wide` ficam de fora, a menos que `pin` seja true).
+ */
+export function LiveEquation({ general, current, label, wide = false, pin }: { general?: string; current: string; label?: string; wide?: boolean; pin?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useScrollFade(ref);
+  const store = useContext(EqPinContext);
+  const id = useId();
+  const eligible = pin ?? !wide;
+  useLayoutEffect(() => {
+    store?.set(id, current, eligible);
+  }, [store, id, current, eligible]);
+  useLayoutEffect(() => () => store?.remove(id), [store, id]);
+  const pinnedId = useSyncExternalStore(store ? store.subscribe : noSubscribe, () => store?.get().id ?? null, () => null);
+  const pinned = pinnedId === id && general ? " pinned" : "";
   return (
-    <div className={`equation${wide ? " wide" : ""}`} ref={ref}>
+    <div className={`equation${wide ? " wide" : ""}${pinned}`} ref={ref}>
       {label && <div className="eq-label">{label}</div>}
       {general && (
         <div className="general">

@@ -14,6 +14,7 @@ import {
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { marchingSquares } from "../math/implicit2d";
 import { snapValue, useSnap } from "../state/context";
+import { Icon } from "../ui/icons";
 
 export type P2 = [number, number];
 
@@ -69,8 +70,9 @@ export function Plane2D({
         </Mafs>
       )}
       <div className="graph-overlay tr">
-        <button type="button" className="btn small" onClick={() => setKey((k) => k + 1)} title="Voltar ao enquadramento inicial">
-          Enquadrar
+        <button type="button" className="btn small frame-btn" onClick={() => setKey((k) => k + 1)} title="Voltar ao enquadramento inicial" aria-label="Enquadrar">
+          <Icon name="frame" size={18} />
+          <span className="frame-label">Enquadrar</span>
         </button>
       </div>
       {overlay}

@@ -9,14 +9,18 @@ import { Arrow, DraggablePoint, Fill, Segment, type P2 } from "../viz2d";
  * Mini módulo da página inicial: soma de vetores pela regra do paralelogramo (o mesmo desenho da logo).
  * Estado local, sem zoom nem arraste do fundo, para não atrapalhar a rolagem da página.
  */
+/** No máximo 300 px, e no celular cerca de 40% da altura da tela (para caber o texto e os botões). */
+const demoHeight = () => Math.round(Math.min(300, Math.max(200, window.innerHeight * 0.4)));
+
 export default function HeroDemo() {
   const [u, setU] = useState<P2>([3, 1]);
   const [v, setV] = useState<P2>([1, 2]);
+  const [height] = useState(demoHeight);
   const sum = add(u, v) as P2;
   return (
     <>
-      <div className="hero-demo-graph" role="figure" aria-label="Dois vetores arrastáveis e a soma deles">
-        <Mafs height={300} width="auto" pan={false} zoom={false} viewBox={{ x: [-1, 6], y: [-1, 4.5], padding: 0.3 }} preserveAspectRatio="contain">
+      <div className="hero-demo-graph" style={{ height }} role="figure" aria-label="Dois vetores arrastáveis e a soma deles">
+        <Mafs height={height} width="auto" pan={false} zoom={false} viewBox={{ x: [-1, 6], y: [-1, 4.5], padding: 0.3 }} preserveAspectRatio="contain">
           <Coordinates.Cartesian subdivisions={false} />
           <Fill points={[[0, 0], u, sum, v]} color="var(--obj1)" opacity={0.1} />
           <Segment a={u} b={sum} dashed />

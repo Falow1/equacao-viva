@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 16px;
+  padding: 0 max(16px, var(--safe-r)) 0 max(16px, var(--safe-l));
   background: color-mix(in srgb, var(--bg) 90%, transparent);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
@@ -48,7 +48,6 @@
   font-size: 14px;
   cursor: pointer;
 }
-.nav-item:hover,
 .nav-item.active,
 .nav-item[aria-current="page"] {
   background: var(--surface-2);
@@ -101,10 +100,7 @@
   font-weight: 550;
   line-height: 1.3;
 }
-.track-links a:hover {
-  background: var(--surface-2);
-  text-decoration: none;
-}
+.track-links a:active { background: var(--surface-2); }
 .track-links small {
   display: block;
   color: var(--text-3);
@@ -225,8 +221,8 @@
   font-size: 14px;
   font-weight: 550;
 }
-.search-results a:hover,
-.search-results a.active {
+.search-results a.active,
+.search-results a:active {
   background: var(--surface-2);
   text-decoration: none;
 }
@@ -250,7 +246,7 @@
 .search.inline .search-results { left: 0; right: auto; width: 100%; text-align: left; }
 
 @media (max-width: 760px) {
-  .topbar { padding: 0 10px 0 14px; gap: 6px; }
+  .topbar { padding: 0 max(10px, var(--safe-r)) 0 max(14px, var(--safe-l)); gap: 6px; }
   .topnav { display: none; }
   .mobile-menu { display: block; }
   .search-toggle { display: inline-grid; }
@@ -390,6 +386,11 @@
 @media (max-width: 899px) {
   .hero { grid-template-columns: 1fr; gap: 28px; }
 }
+/* A página precisa rolar mesmo quando o gesto começa em cima da demonstração (os pontos continuam arrastáveis). */
+.hero-demo .MafsView { touch-action: pan-y; }
+@media (max-width: 399px) {
+  .actions .btn { flex: 1 1 100%; justify-content: center; }
+}
 
 .how {
   list-style: none;
@@ -470,8 +471,8 @@
   color: var(--text);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.lab-band:hover,
-.lab-band:focus-visible {
+.lab-band:focus-visible,
+.lab-band:active {
   border-color: var(--accent);
   box-shadow: var(--shadow-sm);
   text-decoration: none;
@@ -590,6 +591,39 @@
   .about-grid,
   .use-list { grid-template-columns: 1fr; }
 }
+
+/* ---------- Passar o mouse ---------- */
+@media (hover: hover) {
+  .nav-item:hover {
+    background: var(--surface-2);
+    color: var(--text);
+    text-decoration: none;
+  }
+  .track-links a:hover,
+  .search-results a:hover {
+    background: var(--surface-2);
+    text-decoration: none;
+  }
+  .lab-band:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+  }
+}
+
+/* ---------- Toque ---------- */
+@media (pointer: coarse) {
+  .nav-item { height: var(--tap); }
+  .search input { height: var(--tap); font-size: 16px; }
+  .track-links a,
+  .search-results a { min-height: var(--tap); padding: 10px 12px; }
+  .search.expanded .search-close { width: var(--tap); height: var(--tap); }
+}
+
+/* Áreas seguras (notch na lateral com o celular deitado; barra de gestos embaixo) */
+.mobile-panel { padding-bottom: calc(18px + var(--safe-b)); }
+.footer-inner { padding-bottom: calc(32px + var(--safe-b)); }
+.search-results { max-height: min(60vh, calc(var(--vvh, 100dvh) - var(--header-h) - 24px)); }
 
 /* Não encontrado e carregando */
 .not-found {

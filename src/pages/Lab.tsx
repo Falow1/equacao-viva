@@ -5,6 +5,7 @@ import { TransformView } from "../modules/shared2d";
 import { useUrlState } from "../state/useUrlState";
 import { useTitle } from "../ui/brand";
 import { Segmented, Slider } from "../ui/controls";
+import { SplitHandle, useGraphSplit } from "../ui/GraphSplit";
 import { Icon } from "../ui/icons";
 import { Arrow, Dot, ImplicitCurve, Plane2D, Plot, type P2 } from "../viz2d";
 import { Arrow3D, ImplicitSurface, Point3D, Scene3D, Segments3D, type V3 } from "../viz3d";
@@ -185,6 +186,8 @@ export default function Lab() {
   const scopeKey = JSON.stringify(scope);
   const hidden = new Set(s.h as number[]);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const labRef = useRef<HTMLDivElement>(null);
+  const split = useGraphSplit(labRef);
 
   const setLines = (ls: string[]) => set(dim === 2 ? { e2: ls.join("\n") } : { e3: ls.join("\n") });
   const setParam = (k: string, v: number) => set({ p: Object.entries({ ...pvals, [k]: v }).map(([a, b]) => `${a}:${Math.round(b * 1000) / 1000}`).join(",") });
@@ -238,7 +241,7 @@ export default function Lab() {
   });
 
   return (
-    <div className="lab">
+    <div className="lab" ref={labRef} style={split.style} data-dragging={split.dragging ? "" : undefined}>
       <section className="lab-list" aria-label="Lista de expressões">
         <div className="lab-head">
           <div>
@@ -276,7 +279,7 @@ export default function Lab() {
               <button
                 type="button"
                 className={`swatch ${off ? "off" : ""}`}
-                style={{ background: `var(--${color})` }}
+                style={{ backgroundColor: `var(--${color})` }}
                 aria-label={off ? `Mostrar expressão ${i + 1}` : `Esconder expressão ${i + 1}`}
                 aria-pressed={!off}
                 onClick={() => set({ h: off ? (s.h as number[]).filter((x) => x !== i) : [...(s.h as number[]), i] })}
@@ -369,6 +372,7 @@ export default function Lab() {
           </ul>
         </details>
       </section>
+      <SplitHandle split={split} />
       <div className="lab-graph">
         {dim === 2 ? (
           <Plane2D x={[-6, 6]} y={[-5, 5]} label="Gráfico do laboratório">

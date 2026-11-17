@@ -54,7 +54,9 @@ Tudo roda no navegador, sem servidor, login ou coleta de dados.
 - **Link do estado** — "Copiar link" guarda exatamente o que está na tela; quem abrir o link vê o mesmo gráfico.
 - **Laboratório livre** — funções, curvas implícitas e paramétricas, pontos, vetores, matrizes e superfícies, com detecção automática do tipo.
   Letras livres viram sliders.
-- **Tema claro e escuro**, layout para celular, navegação por teclado e busca de módulos (atalho <kbd>/</kbd> ou <kbd>Ctrl</kbd>+<kbd>K</kbd>).
+- **No celular, como um app** — gráfico em cima e painel embaixo, com a equação atual sempre visível numa barra que também serve de alça
+  para aumentar ou diminuir o gráfico. Sliders com botões − e +, e uma barra de teclas acima do teclado para sinal de menos, frações e funções.
+- **Tema claro e escuro**, navegação por teclado e busca de módulos (atalho <kbd>/</kbd> ou <kbd>Ctrl</kbd>+<kbd>K</kbd>).
 
 ## Conteúdo
 
