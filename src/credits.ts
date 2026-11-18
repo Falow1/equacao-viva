@@ -8,7 +8,7 @@ export const CREDITS = {
   curso: "",
   professor: "",
   /** Integrantes do grupo, na ordem em que devem aparecer. */
-  autores: ["Gabriel Egnes", "Gabriel Vinicius", "Gustavo", "Rhonny", "Lairo"] as string[],
+  autores: [] as string[],
   /** Ex.: "2026/2" */
   periodo: "",
 };

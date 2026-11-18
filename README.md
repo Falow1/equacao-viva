@@ -174,5 +174,3 @@ Para mudar os créditos (curso, professor, integrantes, período), edite [`src/c
 ## Créditos
 
 Trabalho da disciplina de **Geometria Analítica e Álgebra Linear** · UNEMAT.
-
-**Integrantes:** Gabriel Egnes, Gabriel Vinicius, Gustavo, Rhonny e Lairo.
